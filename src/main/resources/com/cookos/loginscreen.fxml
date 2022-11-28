@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cookos.controllers.LoginController">
+   <children>
+      <Label fx:id="resultLabel" />
+      <TextField fx:id="loginField" maxWidth="200.0" prefWidth="200.0" promptText="Login" />
+      <TextField fx:id="passwordField" maxWidth="200.0" prefWidth="200.0" promptText="Password" />
+      <Button maxWidth="200.0" mnemonicParsing="false" onAction="#submit" prefWidth="200.0" text="Button" />
+   </children>
+</VBox>
