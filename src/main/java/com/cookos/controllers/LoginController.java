@@ -9,14 +9,13 @@ import com.cookos.model.User;
 import com.cookos.util.HashPassword;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 public class LoginController {
 
     @FXML private Label resultLabel;
     @FXML private TextField loginField;
-    @FXML private TextField passwordField;
+    @FXML private PasswordField passwordField;
     private GenericDao<User> userDao;
     
     public LoginController() {
@@ -37,6 +36,6 @@ public class LoginController {
             return;
         }
 
-        resultLabel.setText("Done");
+        resultLabel.setText(user.getRole().toString());
     }
 }

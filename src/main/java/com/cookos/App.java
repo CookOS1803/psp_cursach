@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 
 import com.cookos.dao.GenericDao;
 import com.cookos.model.User;
+import com.cookos.model.UserRole;
 import com.cookos.util.HashPassword;
 
 
@@ -44,6 +45,7 @@ public class App extends Application {
         //var newUser = User.builder()
         //                  .login("da")
         //                  .password(HashPassword.getHash("da"))
+        //                  .role(UserRole.Admin)
         //                  .build();
         //
         //try {
