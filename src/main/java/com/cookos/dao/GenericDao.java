@@ -5,14 +5,12 @@ import java.util.List;
 import org.hibernate.*;
 import org.hibernate.boot.*;
 import org.hibernate.boot.registry.*;
-import org.hibernate.cfg.Configuration;
 
 import jakarta.persistence.NoResultException;
 
 public class GenericDao<T> {
     protected static final StandardServiceRegistry serviceRegistry;
-    protected static final SessionFactory sessionFactory;
-    protected static final Configuration configuration;
+    public static final SessionFactory sessionFactory;
     protected final Class<T> type;
 
     static {
@@ -20,13 +18,10 @@ public class GenericDao<T> {
 
         var meta = new MetadataSources(serviceRegistry).getMetadataBuilder().build();  
         sessionFactory = meta.getSessionFactoryBuilder().build();
-
-        configuration = new Configuration();
     }
 
     public GenericDao(Class<T> type) {
         this.type = type;
-        configuration.addAnnotatedClass(type);
     }
     
     public List<T> selectAll() {

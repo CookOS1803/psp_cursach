@@ -10,11 +10,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
-import com.cookos.dao.GenericDao;
-import com.cookos.model.User;
-import com.cookos.model.UserRole;
-import com.cookos.util.HashPassword;
-
 
 public class App extends Application {
     private static Scene scene; 
@@ -39,20 +34,6 @@ public class App extends Application {
 
     public static void main(String[] args) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         launch();
-
-        //var userDao = new GenericDao<>(User.class);
-        //
-        //var newUser = User.builder()
-        //                  .login("da")
-        //                  .password(HashPassword.getHash("da"))
-        //                  .role(UserRole.Admin)
-        //                  .build();
-        //
-        //try {
-        //    userDao.add(newUser);
-        //} catch (Exception e) {
-        //    System.out.println("Duplicate login");
-        //}
     }
 
 }
