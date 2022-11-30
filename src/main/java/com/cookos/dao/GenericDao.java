@@ -2,93 +2,72 @@ package com.cookos.dao;
 
 import java.util.List;
 
-import org.hibernate.*;
-import org.hibernate.boot.*;
-import org.hibernate.boot.registry.*;
+import jakarta.persistence.*;
 
-import jakarta.persistence.NoResultException;
-
-public class GenericDao<T> {
-    protected static final StandardServiceRegistry serviceRegistry;
-    public static final SessionFactory sessionFactory;
+public class GenericDao<T> implements AutoCloseable {
+    protected static final EntityManagerFactory entityManagerFactory;
     protected final Class<T> type;
 
-    static {
-        serviceRegistry = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
+    protected EntityManager entityManager = null;
 
-        var meta = new MetadataSources(serviceRegistry).getMetadataBuilder().build();  
-        sessionFactory = meta.getSessionFactoryBuilder().build();
+    static {
+        entityManagerFactory = Persistence.createEntityManagerFactory("persik");
     }
 
     public GenericDao(Class<T> type) {
         this.type = type;
+        entityManager = entityManagerFactory.createEntityManager();
     }
     
     public List<T> selectAll() {
-        try (var session = sessionFactory.openSession()) {
-            
-            var query = session.getCriteriaBuilder().createQuery(type);
-            var root = query.from(type);
+        var query = entityManager.getCriteriaBuilder().createQuery(type);
+        var root = query.from(type);
 
-            query.select(root);
+        query.select(root);
 
-            var selected = session.createQuery(query).list();
+        var result = entityManager.createQuery(query);
+        var selected = result.getResultList();
 
-            return selected;
-        }
-    }
-
-    public T findById(int id) {
-        return findByColumn("id", id);
+        return selected;
     }
 
     public T findByColumn(String columnName, Object value) {
-        try (var session = sessionFactory.openSession()) {
-            var cb = session.getCriteriaBuilder();
-            var query = cb.createQuery(type);
-            var root = query.from(type);
+        var cb = entityManager.getCriteriaBuilder();
+        var query = cb.createQuery(type);
+        var root = query.from(type);
 
-            query.select(root).where(cb.equal(root.get(columnName), value));
+        query.select(root).where(cb.equal(root.get(columnName), value));
 
-            try {
-                var result = session.createQuery(query).getSingleResult();
-                return result;
-            } catch (NoResultException e) {
-                return null;
-            }
+        try {
+            var result = entityManager.createQuery(query).getSingleResult();
+            return result;
+        } catch (NoResultException e) {
+            return null;
         }
     }
 
     public void update(T newRecord) {
-        try (var session = sessionFactory.openSession()) {
-            var transaction = session.beginTransaction();
-
-            session.merge(newRecord);
-            
-            transaction.commit();            
-        }
+        entityManager.getTransaction().begin();
+        entityManager.merge(newRecord);
+        entityManager.getTransaction().commit();
     }
 
-    public int add(T newRecord) throws Exception {
-        try (var session = sessionFactory.openSession()) {
-            var transaction = session.beginTransaction();
-
-            session.persist(newRecord);
-            var id = (Integer)session.getIdentifier(newRecord);
-            
-            transaction.commit();
-
-            return id;
-        }
+    public void add(T newRecord) throws Exception {
+        entityManager.getTransaction().begin();
+        entityManager.persist(newRecord);
+        entityManager.getTransaction().commit();
+        
     }
 
     public void remove(T existingRecord) throws Exception {
-        try (var session = sessionFactory.openSession()) {
-            var transaction = session.beginTransaction();
-
-            session.remove(existingRecord);
-            
-            transaction.commit();         
-        }
+        entityManager.getTransaction().begin();
+        entityManager.remove(existingRecord);        
+        entityManager.getTransaction().commit();
     }
+
+    @Override
+    public void close() throws Exception {
+        entityManager.close();
+    }
+
 }

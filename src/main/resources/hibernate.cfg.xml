@@ -24,10 +24,6 @@
             12345678
         </property>
 
-        <!--property name="hibernate.enable_lazy_load_no_trans">
-            true
-        </property-->
-
         <!-- List of XML mapping files -->
         <mapping class="com.cookos.model.User"/>
         <mapping class="com.cookos.model.Subject"/>
