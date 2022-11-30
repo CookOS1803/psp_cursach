@@ -1,21 +1,25 @@
 package com.cookos.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Table(name = "students")
 public class Student {
 
     @ManyToOne
     @JoinColumn(name = "speciality_id")
+    @ToString.Exclude
     private Speciality speciality;
 
     @Id

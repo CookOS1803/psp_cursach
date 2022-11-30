@@ -2,7 +2,7 @@ package com.cookos.model;
 
 import java.util.*;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 
 @Data
@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Table(name = "speciality")
 public class Speciality {
 

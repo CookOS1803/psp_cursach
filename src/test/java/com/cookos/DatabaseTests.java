@@ -102,6 +102,7 @@ public class DatabaseTests {
             var student = studentDao.findByColumn("id", 322);
 
             System.out.println(student);
+            System.out.println(student.getSpeciality().getStudents());
         }
     }
 

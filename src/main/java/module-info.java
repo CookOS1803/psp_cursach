@@ -2,7 +2,7 @@ module com.cookos {
     //requires transitive javafx.graphics;
     requires javafx.controls;
     requires javafx.fxml;
-    requires jakarta.persistence;
+    requires java.persistence;
     requires lombok;
     requires org.hibernate.orm.core;
 
