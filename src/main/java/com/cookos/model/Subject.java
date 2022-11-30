@@ -2,7 +2,7 @@ package com.cookos.model;
 
 import java.util.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Data

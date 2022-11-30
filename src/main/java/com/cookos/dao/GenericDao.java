@@ -2,7 +2,7 @@ package com.cookos.dao;
 
 import java.util.List;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 public class GenericDao<T> implements AutoCloseable {
     protected static final EntityManagerFactory entityManagerFactory;

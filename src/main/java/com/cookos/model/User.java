@@ -1,6 +1,6 @@
 package com.cookos.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 
