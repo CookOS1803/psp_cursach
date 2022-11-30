@@ -14,7 +14,6 @@ import com.cookos.util.HashPassword;
 public class DatabaseTests {
     
     @Test
-    @Ignore
     public void addAdmin() {
         try (var userDao = new GenericDao<>(User.class)) {
             User newUser = null;
@@ -40,7 +39,6 @@ public class DatabaseTests {
     }
 
     @Test
-    @Ignore
     public void addSpeciality() throws Exception {
         try (var specialityDao = new GenericDao<>(Speciality.class)) {
             
@@ -59,7 +57,6 @@ public class DatabaseTests {
     }
 
     @Test
-    @Ignore
     public void addSubject() throws Exception {
         try (var subjectDao = new GenericDao<>(Subject.class)) {
             

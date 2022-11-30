@@ -1,0 +1,31 @@
+digraph "com.cookos:psp_cursach:jar:1.0" { 
+	"com.cookos:psp_cursach:jar:1.0" -> "junit:junit:jar:4.13.2:test" ; 
+	"com.cookos:psp_cursach:jar:1.0" -> "org.projectlombok:lombok:jar:1.18.24:compile" ; 
+	"com.cookos:psp_cursach:jar:1.0" -> "org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" ; 
+	"com.cookos:psp_cursach:jar:1.0" -> "com.mysql:mysql-connector-j:jar:8.0.31:compile" ; 
+	"com.cookos:psp_cursach:jar:1.0" -> "org.openjfx:javafx-controls:jar:19:compile" ; 
+	"com.cookos:psp_cursach:jar:1.0" -> "org.openjfx:javafx-fxml:jar:19:compile" ; 
+	"junit:junit:jar:4.13.2:test" -> "org.hamcrest:hamcrest-core:jar:1.3:test" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "jakarta.persistence:jakarta.persistence-api:jar:3.0.0:compile" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "jakarta.transaction:jakarta.transaction-api:jar:2.0.0:compile" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "org.jboss.logging:jboss-logging:jar:3.4.3.Final:runtime" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "org.hibernate.common:hibernate-commons-annotations:jar:6.0.2.Final:runtime" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "org.jboss:jandex:jar:2.4.2.Final:runtime" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "com.fasterxml:classmate:jar:1.5.1:runtime" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "net.bytebuddy:byte-buddy:jar:1.12.18:runtime" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "jakarta.xml.bind:jakarta.xml.bind-api:jar:3.0.1:runtime" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "org.glassfish.jaxb:jaxb-runtime:jar:3.0.2:runtime" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "jakarta.inject:jakarta.inject-api:jar:2.0.0:runtime" ; 
+	"org.hibernate.orm:hibernate-core:jar:6.1.5.Final:compile" -> "org.antlr:antlr4-runtime:jar:4.10.1:runtime" ; 
+	"jakarta.xml.bind:jakarta.xml.bind-api:jar:3.0.1:runtime" -> "com.sun.activation:jakarta.activation:jar:2.0.1:runtime" ; 
+	"org.glassfish.jaxb:jaxb-runtime:jar:3.0.2:runtime" -> "org.glassfish.jaxb:jaxb-core:jar:3.0.2:runtime" ; 
+	"org.glassfish.jaxb:jaxb-core:jar:3.0.2:runtime" -> "org.glassfish.jaxb:txw2:jar:3.0.2:runtime" ; 
+	"org.glassfish.jaxb:jaxb-core:jar:3.0.2:runtime" -> "com.sun.istack:istack-commons-runtime:jar:4.0.1:runtime" ; 
+	"com.mysql:mysql-connector-j:jar:8.0.31:compile" -> "com.google.protobuf:protobuf-java:jar:3.19.4:compile" ; 
+	"org.openjfx:javafx-controls:jar:19:compile" -> "org.openjfx:javafx-controls:jar:win:19:compile" ; 
+	"org.openjfx:javafx-controls:jar:19:compile" -> "org.openjfx:javafx-graphics:jar:19:compile" ; 
+	"org.openjfx:javafx-graphics:jar:19:compile" -> "org.openjfx:javafx-graphics:jar:win:19:compile" ; 
+	"org.openjfx:javafx-graphics:jar:19:compile" -> "org.openjfx:javafx-base:jar:19:compile" ; 
+	"org.openjfx:javafx-base:jar:19:compile" -> "org.openjfx:javafx-base:jar:win:19:compile" ; 
+	"org.openjfx:javafx-fxml:jar:19:compile" -> "org.openjfx:javafx-fxml:jar:win:19:compile" ; 
+ } 
