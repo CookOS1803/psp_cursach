@@ -5,6 +5,7 @@ module com.cookos {
     requires jakarta.persistence;
     requires lombok;
     requires org.hibernate.orm.core;
+    requires org.apache.logging.log4j;
 
     opens com.cookos to javafx.fxml;
     opens com.cookos.controllers to javafx.fxml;
