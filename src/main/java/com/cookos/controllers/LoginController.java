@@ -42,7 +42,7 @@ public class LoginController {
                 answer = (String)Client.istream.readObject();
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
-            }            
+            }
 
             Platform.runLater(() -> {
                 resultLabel.setText(answer);

@@ -8,12 +8,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
 
 import com.cookos.controllers.LoadingController;
 import com.cookos.util.FXMLHelpers;
+
 
 
 public class Client extends Application {
@@ -46,12 +45,8 @@ public class Client extends Application {
         loadingThread.start();
     }
 
-    public static void main(String[] args) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        try {
-            launch();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void main(String[] args) {
+        launch();
     }
 
 }
