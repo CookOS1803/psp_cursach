@@ -1,5 +1,6 @@
 package com.cookos.model;
 
+import java.io.Serializable;
 import java.util.*;
 
 import jakarta.persistence.*;
@@ -12,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "speciality")
-public class Speciality {
+public class Speciality implements Serializable {
 
     @ManyToMany(targetEntity = Subject.class, cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(

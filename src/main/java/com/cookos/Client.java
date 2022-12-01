@@ -13,8 +13,6 @@ import java.net.Socket;
 import com.cookos.controllers.LoadingController;
 import com.cookos.util.FXMLHelpers;
 
-
-
 public class Client extends Application {
 
     public static Socket socket = null;

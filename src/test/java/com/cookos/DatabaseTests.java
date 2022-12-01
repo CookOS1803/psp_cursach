@@ -93,6 +93,64 @@ public class DatabaseTests {
     }
 
     @Test
+    public void addSpecialScholarship() throws Exception {
+        try (var studentDao = new GenericDao<>(Student.class); var specialScholarshipDao = new GenericDao<>(SpecialScholarship.class)) {
+                        
+            var newSch = SpecialScholarship.builder()
+                                           .id(322)
+                                           .social(200)
+                                           .personal(300)
+                                           .named(400)
+                                           .build();
+
+            specialScholarshipDao.add(newSch);
+        }
+    }
+
+    @Test
+    public void addPerformance() throws Exception {
+        try (var performanceDao = new GenericDao<>(Performance.class);
+        var studentDao = new GenericDao<>(Student.class);
+        var subjectDao = new GenericDao<>(Subject.class)) {
+            
+            var student = studentDao.findByColumn("id", 322);
+            var subject = subjectDao.findByColumn("id", 222);
+
+            var newPerformance = Performance.builder()
+                                            .totalScore(6.5f)
+                                            .missedHours(8)
+                                            .student(student)
+                                            .subject(subject)
+                                            .build();
+
+            performanceDao.add(newPerformance);
+        }
+    }
+
+    @Test
+    public void checkPerformance() throws Exception {
+        try (var performanceDao = new GenericDao<>(Performance.class)) {
+            
+            var performance = performanceDao.findByColumn("id", 1);
+
+            System.out.println(performance);
+            System.out.println(performance.getStudent().getLastName());
+            System.out.println(performance.getSubject().getName());
+        }
+    }
+
+    @Test
+    public void checkSpecialScholarship() throws Exception {
+        try (var specialScholarshipDao = new GenericDao<>(SpecialScholarship.class)) {
+            
+            var sc = specialScholarshipDao.findByColumn("id", 322);
+
+            System.out.println(sc);
+            System.out.println(sc.getStudent());
+        }
+    }
+
+    @Test
     public void checkStudent() throws Exception {
         try (var studentDao = new GenericDao<>(Student.class)) {
             

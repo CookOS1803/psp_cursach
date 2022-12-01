@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import com.cookos.Client;
+import com.cookos.net.LoginMessage;
+import com.cookos.util.FXMLHelpers;
 import com.cookos.util.HashPassword;
 
 import javafx.application.Platform;
@@ -17,7 +19,7 @@ public class LoginController {
     @FXML private PasswordField passwordField;
     @FXML private Button submitButton;
 
-    private String answer = null;
+    private LoginMessage answer = null;
     
     @FXML
     private void submit() throws NoSuchAlgorithmException, IOException, ClassNotFoundException {
@@ -36,16 +38,28 @@ public class LoginController {
         submitButton.setDisable(true);
 
         new Thread(() -> {
-            answer = "null";
 
             try {
-                answer = (String)Client.istream.readObject();
+                answer = (LoginMessage)Client.istream.readObject();
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
+                return;
+            }
+
+            if (answer == LoginMessage.Success) {
+                
+                Platform.runLater(() -> {
+                    try {
+                        FXMLHelpers.setRoot("adminmenu");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                
             }
 
             Platform.runLater(() -> {
-                resultLabel.setText(answer);
+                resultLabel.setText(answer.toString());
                 loginField.setDisable(false);
                 passwordField.setDisable(false);
                 submitButton.setDisable(false);

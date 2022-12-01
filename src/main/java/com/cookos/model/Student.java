@@ -1,5 +1,9 @@
 package com.cookos.model;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,12 +19,22 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "students")
-public class Student {
+public class Student implements Serializable {
+
+    @OneToMany(mappedBy = "student")
+    @ToString.Exclude
+    @Builder.Default
+    private Set<Performance> performance = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "speciality_id")
     @ToString.Exclude
     private Speciality speciality;
+
+    @OneToOne
+    @JoinColumn(name = "id")
+    @ToString.Exclude
+    private SpecialScholarship specialScholarship;
 
     @Id
     @Column(name = "id")

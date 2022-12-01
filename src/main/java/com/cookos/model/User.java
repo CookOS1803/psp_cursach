@@ -1,5 +1,7 @@
 package com.cookos.model;
 
+import java.io.Serializable;
+
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +10,7 @@ import lombok.Data;
 @Entity
 @Builder
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
