@@ -4,40 +4,55 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.OnDelete;
-
 import com.cookos.Client;
 import com.cookos.model.Student;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 public class AdminMenuController {
 
+    @FXML private TabPane tabPane;
+
     @FXML private TableView<List<Object>> studentsTable;
+    private List<Student> students;
     
     @FXML
+    @SuppressWarnings("unchecked")
     private void initialize() throws ClassNotFoundException, IOException {
-        
-        var students = (List<Student>)Client.istream.readObject();
 
-        initializeStudentsTable(students);
+        tabPane.setDisable(true);
+
+        new Thread(() -> {
+            try {
+                students = (List<Student>)Client.istream.readObject();
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            Platform.runLater(() -> {
+                initializeStudentsTable();
+
+                tabPane.setDisable(false);
+            });
+
+        }).start();
+        
+        
     }
 
-    private void initializeStudentsTable(List<Student> students) {
-        addColumn(studentsTable, "id", 0);
-        addColumn(studentsTable, "Last name", 1);
-        addColumn(studentsTable, "First name", 2);
-        addColumn(studentsTable, "Patronymic", 3);
-        addColumn(studentsTable, "Phone", 4);
-        addColumn(studentsTable, "Address", 5);
-        addColumn(studentsTable, "Email", 6);
-        addColumn(studentsTable, "Education form", 7);
-        addColumn(studentsTable, "Speciality", 8);
+    private void initializeStudentsTable() {
+        
+        for (int i = 0; i < studentsTable.getColumns().size(); i++) {
+            eee(studentsTable, i);
+        }
 
         ObservableList<List<Object>> items = FXCollections.observableArrayList();
         
@@ -60,9 +75,8 @@ public class AdminMenuController {
         studentsTable.setItems(items);
     }
 
-    private void addColumn(TableView<List<Object>> table, String columnName, int columnIndex) {
-        var column = new TableColumn<List<Object>, Object>(columnName);
-        column.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().get(columnIndex)));
-        table.getColumns().add(column);
+    @SuppressWarnings("unchecked")
+    private void eee(TableView<List<Object>> table, int columnIndex) {
+        ((TableColumn<List<Object>, Object>)table.getColumns().get(columnIndex)).setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().get(columnIndex)));
     }
 }

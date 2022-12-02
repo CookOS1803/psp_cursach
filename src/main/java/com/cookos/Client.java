@@ -22,7 +22,7 @@ public class Client extends Application {
     public static Scene scene = null;
 
     @Override
-    @SuppressWarnings("all")    
+    @SuppressWarnings("all")
     public void start(Stage stage) throws IOException, InterruptedException {
         var loader = FXMLHelpers.makeLoader("loading");
         var parent = (Parent)loader.load();

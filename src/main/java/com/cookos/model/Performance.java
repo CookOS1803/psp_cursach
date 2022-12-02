@@ -1,5 +1,7 @@
 package com.cookos.model;
 
+import java.io.Serializable;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "performance")
-public class Performance {
+public class Performance implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "students_id")
