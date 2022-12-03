@@ -2,6 +2,8 @@ package com.cookos.model;
 
 import java.io.Serializable;
 
+import com.cookos.net.ModelType;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "special_scholarship")
-public class SpecialScholarship implements Serializable {
+public class SpecialScholarship implements Serializable, Model {
     
     @OneToOne
     @JoinColumn(name = "id")
@@ -31,4 +33,9 @@ public class SpecialScholarship implements Serializable {
 
     @Column(name = "named")
     private float named;
+
+    @Override
+    public ModelType getModelType() {
+        return ModelType.SpecialScholarship;
+    }
 }

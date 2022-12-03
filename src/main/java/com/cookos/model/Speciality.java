@@ -3,6 +3,8 @@ package com.cookos.model;
 import java.io.Serializable;
 import java.util.*;
 
+import com.cookos.net.ModelType;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "speciality")
-public class Speciality implements Serializable {
+public class Speciality implements Serializable, Model {
 
     @ManyToMany(targetEntity = Subject.class, cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(
@@ -51,5 +53,10 @@ public class Speciality implements Serializable {
 
     @Column(name = "mult9")
     private float mult9;
+
+    @Override
+    public ModelType getModelType() {
+        return ModelType.Speciality;
+    }
 
 }

@@ -2,6 +2,8 @@ package com.cookos.model;
 
 import java.io.Serializable;
 
+import com.cookos.net.ModelType;
+
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +12,7 @@ import lombok.Data;
 @Entity
 @Builder
 @Table(name = "users")
-public class User implements Serializable {
+public class User implements Serializable, Model {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -35,5 +37,10 @@ public class User implements Serializable {
         this.login = login;
         this.password = password;
         this.role = role;
+    }
+
+    @Override
+    public ModelType getModelType() {
+        return ModelType.User;
     }    
 }

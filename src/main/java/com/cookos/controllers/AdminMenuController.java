@@ -5,7 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cookos.Client;
+import com.cookos.model.Model;
 import com.cookos.model.Student;
+import com.cookos.net.AnswerType;
+import com.cookos.net.ClientMessage;
+import com.cookos.net.OperationType;
+import com.cookos.net.ServerMessage;
+import com.cookos.util.FXMLHelpers;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -15,21 +21,36 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.Pane;
 
 public class AdminMenuController {
 
     @FXML private TabPane tabPane;
+    @FXML private TitledPane addStudentPane;
+    private AddStudentMenuController addStudentController;
 
     @FXML private TableView<List<Object>> studentsTable;
     private List<Student> students;
+
+    private Runnable updateTablesTask;
     
     @FXML
     @SuppressWarnings("unchecked")
     private void initialize() throws ClassNotFoundException, IOException {
 
-        tabPane.setDisable(true);
+        var addStudentLoader = FXMLHelpers.makeLoader("addstudentmenu");
+        var pane = (Pane)addStudentLoader.load();
+        addStudentPane.setContent(pane);
+        addStudentController = addStudentLoader.getController();
 
-        new Thread(() -> {
+        addStudentController.setAdminMenuController(this);
+        
+        addCellFactories(studentsTable);
+
+        updateTablesTask = () -> {            
+            Platform.runLater(() -> tabPane.setDisable(true));
+
             try {
                 students = (List<Student>)Client.istream.readObject();
             } catch (ClassNotFoundException | IOException e) {
@@ -43,17 +64,18 @@ public class AdminMenuController {
                 tabPane.setDisable(false);
             });
 
-        }).start();
-        
-        
+        };
+
+        new Thread(updateTablesTask).start();
+    }
+
+    private void addCellFactories(TableView<List<Object>> table) {
+        for (int i = 0; i < table.getColumns().size(); i++) {
+            eee(table, i);
+        }
     }
 
     private void initializeStudentsTable() {
-        
-        for (int i = 0; i < studentsTable.getColumns().size(); i++) {
-            eee(studentsTable, i);
-        }
-
         ObservableList<List<Object>> items = FXCollections.observableArrayList();
         
         for (var s : students) {            
@@ -78,5 +100,25 @@ public class AdminMenuController {
     @SuppressWarnings("unchecked")
     private void eee(TableView<List<Object>> table, int columnIndex) {
         ((TableColumn<List<Object>, Object>)table.getColumns().get(columnIndex)).setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().get(columnIndex)));
+    }
+
+    public void addModel(@SuppressWarnings("all") Model model) {
+        try {
+            Client.ostream.writeObject(ClientMessage.builder()
+                                                    .operationType(OperationType.Add)
+                                                    .value(model)
+                                                    .build());
+            Client.ostream.flush();
+
+            var message = (ServerMessage)Client.istream.readObject();
+
+            if (message.getAnswerType() == AnswerType.Failure) {
+                System.out.println(message.getMessage());
+            } else {
+                new Thread(updateTablesTask).start();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

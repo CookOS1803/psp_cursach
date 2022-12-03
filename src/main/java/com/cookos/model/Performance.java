@@ -2,6 +2,8 @@ package com.cookos.model;
 
 import java.io.Serializable;
 
+import com.cookos.net.ModelType;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "performance")
-public class Performance implements Serializable {
+public class Performance implements Serializable, Model {
 
     @ManyToOne
     @JoinColumn(name = "students_id")
@@ -34,4 +36,9 @@ public class Performance implements Serializable {
 
     @Column(name = "missed_hours")
     private int missedHours;
+
+    @Override
+    public ModelType getModelType() {
+        return ModelType.Performance;
+    }
 }

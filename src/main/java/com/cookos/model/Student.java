@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.cookos.net.ModelType;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +21,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "students")
-public class Student implements Serializable {
+public class Student implements Serializable, Model {
 
     @OneToMany(mappedBy = "student")
     @ToString.Exclude
@@ -61,4 +63,12 @@ public class Student implements Serializable {
     @Column(name = "education_form")
     @Enumerated(EnumType.STRING)
     private EducationForm educationForm;
+
+    @Column(name = "speciality_id", insertable = false, updatable = false)
+    private int specialityId;
+
+    @Override
+    public ModelType getModelType() {
+        return ModelType.Student;
+    }
 }
