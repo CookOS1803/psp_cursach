@@ -5,21 +5,17 @@ import java.net.*;
 import java.util.Arrays;
 
 import com.cookos.dao.GenericDao;
-import com.cookos.model.Speciality;
-import com.cookos.model.Student;
-import com.cookos.model.User;
+import com.cookos.model.*;
 import com.cookos.net.*;
+import com.cookos.util.HashPassword;
 
 public class ServerTask implements Runnable {
     
     private ObjectOutputStream ostream;
     private ObjectInputStream istream;
-    //private Socket socket;
 
     public ServerTask(Socket socket) throws IOException
     {
-        //this.socket = socket;
-        
         ostream = new ObjectOutputStream(socket.getOutputStream());
         ostream.flush();
         istream = new ObjectInputStream(socket.getInputStream());
@@ -70,6 +66,8 @@ public class ServerTask implements Runnable {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+
+                return;
             }
         }
     }
@@ -96,7 +94,8 @@ public class ServerTask implements Runnable {
                 ostream.writeObject(ServerMessage.builder()
                                                  .answerType(AnswerType.Failure)
                                                  .message("Wrong speciality id")
-                                                 .build());
+                                                 .build()
+                );
                 ostream.flush();
 
                 return false;
@@ -111,7 +110,46 @@ public class ServerTask implements Runnable {
             ostream.writeObject(ServerMessage.builder()
                                              .answerType(AnswerType.Failure)
                                              .message("Duplicate student id")
-                                             .build());
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        }
+
+        try (
+            var performanceDao = new GenericDao<>(Performance.class);
+            var scholarshipDao = new GenericDao<>(SpecialScholarship.class);
+            var userDao = new GenericDao<>(User.class);
+            var studentDao = new GenericDao<>(Student.class)
+        ) {
+            student = studentDao.findByColumn("id", student.getId());
+
+            scholarshipDao.add(SpecialScholarship.builder().id(student.getId()).build());
+
+            var login = String.valueOf(student.getId());
+            userDao.add(User.builder()
+                            .login(login)
+                            .password(HashPassword.getHash(login))
+                            .role(UserRole.Student)
+                            .build()
+            );
+
+            for (var subject : student.getSpeciality().getSubjects()) {
+                performanceDao.add(Performance.builder()
+                                              .student(student)
+                                              .subject(subject)
+                                              .build()
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Error while adding subentities")
+                                             .build()
+            );
             ostream.flush();
 
             return false;
@@ -119,17 +157,31 @@ public class ServerTask implements Runnable {
 
         ostream.writeObject(ServerMessage.builder()
                                          .answerType(AnswerType.Success)
-                                         .build());
+                                         .build()
+        );
         ostream.flush();
 
         return true;
     }
 
     private void sendModels() {
-        try (var studentDao = new GenericDao<>(Student.class)) {
-            var students = studentDao.selectAll();
-
-            ostream.writeObject(students);
+        try (
+            var studentDao = new GenericDao<>(Student.class);
+            var performanceDao = new GenericDao<>(Performance.class);
+            var specialScholarshipDao = new GenericDao<>(SpecialScholarship.class);
+            var subjectDao = new GenericDao<>(Subject.class);
+            var specialityDao = new GenericDao<>(Speciality.class);
+            var userDao = new GenericDao<>(User.class);
+        ) {
+            ostream.writeObject(ModelBundle.builder()
+                                           .students(studentDao.selectAll())
+                                           .performances(performanceDao.selectAll())
+                                           .specialScholarships(specialScholarshipDao.selectAll())
+                                           .subjects(subjectDao.selectAll())
+                                           .specialities(specialityDao.selectAll())
+                                           .users(userDao.selectAll())
+                                           .build()
+            );
             ostream.flush();
         } catch (Exception e) {
             e.printStackTrace();
