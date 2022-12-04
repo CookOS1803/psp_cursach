@@ -14,7 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "special_scholarship")
-public class SpecialScholarship implements Serializable, Model {
+public class SpecialScholarship implements Serializable, Model, Identifiable {
     
     @OneToOne
     @JoinColumn(name = "id")

@@ -31,7 +31,17 @@ public class GenericDao<T> implements AutoCloseable {
         return selected;
     }
 
-    public T findByColumn(String columnName, Object value) {
+    public T findByUniqueColumn(String columnName, Object value) {
+        var list = findByColumn(columnName, value);
+
+        if (list == null || list.isEmpty()) {
+            return null;
+        } else {
+            return list.get(0);
+        }
+    }
+
+    public List<T> findByColumn(String columnName, Object value) {
         var cb = entityManager.getCriteriaBuilder();
         var query = cb.createQuery(type);
         var root = query.from(type);
@@ -39,7 +49,7 @@ public class GenericDao<T> implements AutoCloseable {
         query.select(root).where(cb.equal(root.get(columnName), value));
 
         try {
-            var result = entityManager.createQuery(query).getSingleResult();
+            var result = entityManager.createQuery(query).getResultList();
             return result;
         } catch (NoResultException e) {
             return null;

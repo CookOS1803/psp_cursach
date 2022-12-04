@@ -81,16 +81,85 @@ public class ServerTask implements Runnable {
         }
     }
 
-    private boolean removeUser(ClientMessage message) {
-        return false;
+    private boolean removeUser(ClientMessage message) throws IOException {
+        try (var userDao = new GenericDao<>(User.class)) {
+            var user = userDao.findByUniqueColumn("id", ((User)message.getValue()).getId());
+
+            userDao.remove(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Error while removing user")
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        }
+
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Success)
+                                         .build()
+        );
+        ostream.flush();
+
+        return true;
     }
 
-    private boolean removeSubject(ClientMessage message) {
-        return false;
+    private boolean removeSubject(ClientMessage message) throws IOException {
+        try (var subjectDao = new GenericDao<>(Subject.class)) {
+            var subject = subjectDao.findByUniqueColumn("id", ((Subject)message.getValue()).getId());
+
+            subjectDao.remove(subject);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Error while removing subject")
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        }
+
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Success)
+                                         .build()
+        );
+        ostream.flush();
+
+        return true;
     }
 
-    private boolean removeSpeciality(ClientMessage message) {
-        return false;
+    private boolean removeSpeciality(ClientMessage message) throws IOException {
+        try (var specialityDao = new GenericDao<>(Speciality.class)) {
+            var speciality = specialityDao.findByUniqueColumn("id", ((Speciality)message.getValue()).getId());
+
+            specialityDao.remove(speciality);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Error while removing speciality")
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        }
+
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Success)
+                                         .build()
+        );
+        ostream.flush();
+
+        return true;
     }
 
     private boolean removeStudent(ClientMessage message) throws IOException {
@@ -98,8 +167,8 @@ public class ServerTask implements Runnable {
             var studentDao = new GenericDao<>(Student.class);
             var userDao = new GenericDao<>(User.class)
         ) {
-            var student = studentDao.findByColumn("id", ((Student)message.getValue()).getId());
-            var user = userDao.findByColumn("login", String.valueOf(student.getId()));
+            var student = studentDao.findByUniqueColumn("id", ((Student)message.getValue()).getId());
+            var user = userDao.findByUniqueColumn("login", String.valueOf(student.getId()));
 
             studentDao.remove(student);
             userDao.remove(user);
@@ -204,7 +273,7 @@ public class ServerTask implements Runnable {
         var student = (Student)message.getValue();
 
         try (var specialityDao = new GenericDao<>(Speciality.class)) {
-            var speciality = specialityDao.findByColumn("id", student.getSpecialityId());
+            var speciality = specialityDao.findByUniqueColumn("id", student.getSpecialityId());
 
             if (speciality == null) {
                 ostream.writeObject(ServerMessage.builder()
@@ -260,7 +329,7 @@ public class ServerTask implements Runnable {
             var scholarshipDao = new GenericDao<>(SpecialScholarship.class);
             var studentDao = new GenericDao<>(Student.class)
         ) {
-            student = studentDao.findByColumn("id", student.getId());
+            student = studentDao.findByUniqueColumn("id", student.getId());
 
             scholarshipDao.add(SpecialScholarship.builder().id(student.getId()).build());            
 
@@ -327,7 +396,7 @@ public class ServerTask implements Runnable {
 
             try (var userDao = new GenericDao<>(User.class)) {
 
-                var user = userDao.findByColumn("login", login);
+                var user = userDao.findByUniqueColumn("login", login);
 
                 if (user == null) {
                     ostream.writeObject(LoginMessage.WrongLogin);

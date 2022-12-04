@@ -12,7 +12,7 @@ import lombok.Data;
 @Entity
 @Builder
 @Table(name = "users")
-public class User implements Serializable, Model {
+public class User implements Serializable, Model, Identifiable {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)

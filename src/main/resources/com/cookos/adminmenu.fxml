@@ -39,7 +39,7 @@
          <content>
             <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
                <items>
-                  <TableView fx:id="specialitiesTable">
+                  <TableView fx:id="specialitiesTable" onMouseReleased="#onSpecialitiesTableClick">
                      <columns>
                         <TableColumn minWidth="50.0" prefWidth="75.0" text="Id" />
                         <TableColumn minWidth="50.0" prefWidth="75.0" text="Name" />
@@ -62,7 +62,7 @@
          <content>
             <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
                <items>
-                  <TableView fx:id="subjectsTable">
+                  <TableView fx:id="subjectsTable" onMouseReleased="#onSubjectsTableClick">
                      <columns>
                         <TableColumn minWidth="50.0" prefWidth="75.0" text="Id" />
                         <TableColumn minWidth="50.0" prefWidth="75.0" text="Name" />
@@ -97,7 +97,7 @@
                      <content>
                         <SplitPane dividerPositions="0.6366666666666667" prefHeight="160.0" prefWidth="200.0">
                           <items>
-                              <TableView fx:id="userAdminTable">
+                              <TableView fx:id="userAdminTable" onMouseReleased="#onAdminsTableClick">
                                  <columns>
                                     <TableColumn minWidth="50.0" prefWidth="75.0" text="Id" />
                                     <TableColumn minWidth="50.0" prefWidth="75.0" text="Login" />

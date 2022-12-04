@@ -2,10 +2,13 @@ package com.cookos.controllers;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.cookos.Client;
+import com.cookos.model.Identifiable;
 import com.cookos.model.Model;
 import com.cookos.net.*;
+import com.cookos.util.CastHelpers;
 import com.cookos.util.FXMLHelpers;
 import com.cookos.util.TableIntitializers;
 
@@ -101,14 +104,40 @@ public class AdminMenuController {
 
     @FXML
     private void onStudentsTableClick(MouseEvent event) {
+        onTableClick(event, studentsTable, CastHelpers.toIdentifiables(modelBundle.getStudents()));
+    }
+
+    @FXML
+    private void onSpecialitiesTableClick(MouseEvent event) {
+        onTableClick(event, specialitiesTable, CastHelpers.toIdentifiables(modelBundle.getSpecialities()));
+    }
+
+    @FXML
+    private void onSubjectsTableClick(MouseEvent event) {
+        onTableClick(event, subjectsTable, CastHelpers.toIdentifiables(modelBundle.getSubjects()));
+    }
+
+    @FXML
+    private void onAdminsTableClick(MouseEvent event) {
+        onTableClick(event, userAdminTable, CastHelpers.toIdentifiables(modelBundle.getUsers()));
+    }
+
+    private void onTableClick(MouseEvent event, TableView<List<Object>> table, List<Identifiable> identifiables) {
         if (contextMenu.isShowing()) {
             contextMenu.hide();
         }
 
         if (event.getButton() == MouseButton.SECONDARY) {
-            int selectedIndex = studentsTable.getSelectionModel().getSelectedIndex();
-            removeItem.setOnAction(e -> removeModel(modelBundle.getStudents().get(selectedIndex)));
-            contextMenu.show(studentsTable, event.getScreenX(), event.getScreenY());
+            int selectedIndex = table.getSelectionModel().getSelectedIndex();
+            int id = (Integer)table.getItems().get(selectedIndex).get(0);
+
+            removeItem.setOnAction(e -> removeModel(
+                (Model)identifiables.stream()
+                                    .filter(s -> s.getId() == id)
+                                    .collect(Collectors.toList())
+                                    .get(0)
+            ));
+            contextMenu.show(table, event.getScreenX(), event.getScreenY());
         }
     }
 

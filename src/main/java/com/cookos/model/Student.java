@@ -21,7 +21,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "students")
-public class Student implements Serializable, Model {
+public class Student implements Serializable, Model, Identifiable {
 
     @OneToMany(mappedBy = "student")
     @ToString.Exclude

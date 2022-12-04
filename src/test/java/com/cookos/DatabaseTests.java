@@ -74,7 +74,7 @@ public class DatabaseTests {
     public void addStudent() throws Exception {
         try (var studentDao = new GenericDao<>(Student.class); var specialityDao = new GenericDao<>(Speciality.class)) {
             
-            var spec = specialityDao.findByColumn("id", 12);
+            var spec = specialityDao.findByUniqueColumn("id", 12);
             
             var newStudent = Student.builder()
                                     .id(322)
@@ -113,8 +113,8 @@ public class DatabaseTests {
         var studentDao = new GenericDao<>(Student.class);
         var subjectDao = new GenericDao<>(Subject.class)) {
             
-            var student = studentDao.findByColumn("id", 322);
-            var subject = subjectDao.findByColumn("id", 222);
+            var student = studentDao.findByUniqueColumn("id", 322);
+            var subject = subjectDao.findByUniqueColumn("id", 222);
 
             var newPerformance = Performance.builder()
                                             .totalScore(6.5f)
@@ -131,7 +131,7 @@ public class DatabaseTests {
     public void checkPerformance() throws Exception {
         try (var performanceDao = new GenericDao<>(Performance.class)) {
             
-            var performance = performanceDao.findByColumn("id", 1);
+            var performance = performanceDao.findByUniqueColumn("id", 1);
 
             System.out.println(performance);
             System.out.println(performance.getStudent().getLastName());
@@ -143,7 +143,7 @@ public class DatabaseTests {
     public void checkSpecialScholarship() throws Exception {
         try (var specialScholarshipDao = new GenericDao<>(SpecialScholarship.class)) {
             
-            var sc = specialScholarshipDao.findByColumn("id", 322);
+            var sc = specialScholarshipDao.findByUniqueColumn("id", 322);
 
             System.out.println(sc);
             System.out.println(sc.getStudent());
@@ -154,7 +154,7 @@ public class DatabaseTests {
     public void checkStudent() throws Exception {
         try (var studentDao = new GenericDao<>(Student.class)) {
             
-            var student = studentDao.findByColumn("id", 322);
+            var student = studentDao.findByUniqueColumn("id", 322);
 
             System.out.println(student);
             System.out.println(student.getSpeciality().getStudents());
@@ -166,8 +166,8 @@ public class DatabaseTests {
         
         try (var subjectDao = new GenericDao<>(Subject.class); var specialityDao = new GenericDao<>(Speciality.class)) {            
 
-            var subject = subjectDao.findByColumn("id", 222);
-            var spec = specialityDao.findByColumn("id", 12);
+            var subject = subjectDao.findByUniqueColumn("id", 222);
+            var spec = specialityDao.findByUniqueColumn("id", 12);
     
             spec.getSubjects().add(subject);
                 

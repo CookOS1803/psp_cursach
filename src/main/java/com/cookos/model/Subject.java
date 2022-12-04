@@ -15,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "subjects")
-public class Subject implements Serializable, Model {
+public class Subject implements Serializable, Model, Identifiable {
 
     @ManyToMany(targetEntity = Speciality.class, cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(
