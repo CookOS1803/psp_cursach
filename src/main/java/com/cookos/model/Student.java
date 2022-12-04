@@ -64,8 +64,7 @@ public class Student implements Serializable, Model {
     @Enumerated(EnumType.STRING)
     private EducationForm educationForm;
 
-    @Column(name = "speciality_id", insertable = false, updatable = false)
-    private int specialityId;
+    @Transient private int specialityId;
 
     @Override
     public ModelType getModelType() {

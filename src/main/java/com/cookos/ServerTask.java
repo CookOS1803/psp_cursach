@@ -49,7 +49,16 @@ public class ServerTask implements Runnable {
                         }
                     }
                     case Update -> {}
-                    case Remove -> {}
+                    case Remove -> {
+                        switch (message.getValue().getModelType()) {
+                            case Performance -> {}
+                            case Student -> {if (!removeStudent(message)) continue;}
+                            case Speciality -> {if (!removeSpeciality(message)) continue;}
+                            case Subject -> {if (!removeSubject(message)) continue;}
+                            case SpecialScholarship -> {}
+                            case User -> {if (!removeUser(message)) continue;}
+                        }
+                    }
                 }
 
                 sendModels();
@@ -72,16 +81,123 @@ public class ServerTask implements Runnable {
         }
     }
 
-    private boolean addUser(ClientMessage message) {
+    private boolean removeUser(ClientMessage message) {
         return false;
     }
 
-    private boolean addSubject(ClientMessage message) {
+    private boolean removeSubject(ClientMessage message) {
         return false;
     }
 
-    private boolean addSpeciality(ClientMessage message) {
+    private boolean removeSpeciality(ClientMessage message) {
         return false;
+    }
+
+    private boolean removeStudent(ClientMessage message) throws IOException {
+        try (
+            var studentDao = new GenericDao<>(Student.class);
+            var userDao = new GenericDao<>(User.class)
+        ) {
+            var student = studentDao.findByColumn("id", ((Student)message.getValue()).getId());
+            var user = userDao.findByColumn("login", String.valueOf(student.getId()));
+
+            studentDao.remove(student);
+            userDao.remove(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Error while removing student")
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        }
+
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Success)
+                                         .build()
+        );
+        ostream.flush();
+
+        return true;
+    }
+
+    private boolean addUser(ClientMessage message) throws IOException {
+        var user = (User)message.getValue();
+
+        try (var userDao = new GenericDao<>(User.class)) {
+            userDao.add(user);
+        } catch (Exception e) {
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Duplicate user id")
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        }
+        
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Success)
+                                         .build()
+        );
+        ostream.flush();
+
+        return true;
+    }
+
+    private boolean addSubject(ClientMessage message) throws IOException {
+        var subject = (Subject)message.getValue();
+
+        try (var subjectDao = new GenericDao<>(Subject.class)) {
+            subjectDao.add(subject);
+        } catch (Exception e) {
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Duplicate subject id")
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        }
+        
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Success)
+                                         .build()
+        );
+        ostream.flush();
+
+        return true;
+    }
+
+    private boolean addSpeciality(ClientMessage message) throws IOException {
+        var speciality = (Speciality)message.getValue();
+
+        try (var specialityDao = new GenericDao<>(Speciality.class)) {
+            specialityDao.add(speciality);
+        } catch (Exception e) {
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Duplicate speciality id")
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        }
+        
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Success)
+                                         .build()
+        );
+        ostream.flush();
+
+        return true;
     }
 
     private boolean addStudent(ClientMessage message) throws Exception {
@@ -104,6 +220,28 @@ public class ServerTask implements Runnable {
             student.setSpeciality(speciality);
         }
 
+        
+
+        try (var userDao = new GenericDao<>(User.class)) {
+            var login = String.valueOf(student.getId());
+            userDao.add(User.builder()
+                            .login(login)
+                            .password(HashPassword.getHash(login))
+                            .role(UserRole.Student)
+                            .build()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Duplicate user login")
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        }
+
         try (var studentDao = new GenericDao<>(Student.class)) {
             studentDao.add(student);
         } catch (Exception e) {
@@ -120,20 +258,11 @@ public class ServerTask implements Runnable {
         try (
             var performanceDao = new GenericDao<>(Performance.class);
             var scholarshipDao = new GenericDao<>(SpecialScholarship.class);
-            var userDao = new GenericDao<>(User.class);
             var studentDao = new GenericDao<>(Student.class)
         ) {
             student = studentDao.findByColumn("id", student.getId());
 
-            scholarshipDao.add(SpecialScholarship.builder().id(student.getId()).build());
-
-            var login = String.valueOf(student.getId());
-            userDao.add(User.builder()
-                            .login(login)
-                            .password(HashPassword.getHash(login))
-                            .role(UserRole.Student)
-                            .build()
-            );
+            scholarshipDao.add(SpecialScholarship.builder().id(student.getId()).build());            
 
             for (var subject : student.getSpeciality().getSubjects()) {
                 performanceDao.add(Performance.builder()

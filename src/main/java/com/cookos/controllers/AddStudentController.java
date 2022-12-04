@@ -8,9 +8,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
-import lombok.Setter;
 
-public class AddStudentController {
+public class AddStudentController extends AdminSubController {
     @FXML private TextField idField;
     @FXML private TextField lastNameField;
     @FXML private TextField firstNameField;
@@ -21,8 +20,6 @@ public class AddStudentController {
     @FXML private TextField specialityField;
     @FXML private RadioButton paidButton;
     @FXML private RadioButton freeButton;
-
-    @Setter private AdminMenuController adminMenuController;
 
     @FXML
     private void addStudent() {
@@ -69,6 +66,7 @@ public class AddStudentController {
                              .firstName(firstNameField.getText().strip())
                              .patronymic(patronymicField.getText().strip())
                              .phone(phoneField.getText().strip())
+                             .address(addressField.getText().strip())
                              .email(emailField.getText().strip())
                              .educationForm(form)
                              .specialityId(specialityId)

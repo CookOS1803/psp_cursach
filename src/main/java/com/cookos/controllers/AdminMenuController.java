@@ -27,9 +27,9 @@ public class AdminMenuController {
 
     @FXML private TabPane tabPane;
     @FXML private TitledPane addStudentPane;
+    @FXML private TitledPane addSpecialityPane;
+    @FXML private TitledPane addSubjectPane;
     @FXML private FlowPane addAdminPane;
-    private AddStudentController addStudentController;
-    private AddAdminController addAdminController;
 
     @FXML private TableView<List<Object>> studentsTable;
     @FXML private TableView<List<Object>> specialitiesTable;
@@ -38,19 +38,22 @@ public class AdminMenuController {
     @FXML private TableView<List<Object>> userAdminTable;
     private ModelBundle modelBundle;
 
+    private ContextMenu contextMenu;
+    private MenuItem removeItem;
+    private MenuItem changeItem;
+
     private Runnable updateTablesTask;
     
     @FXML
     private void initialize() throws ClassNotFoundException, IOException {
 
-        var addStudentLoader = FXMLHelpers.makeLoader("addstudentmenu");
-        addStudentPane.setContent((Pane)addStudentLoader.load());
-        addStudentController = addStudentLoader.getController();
-        addStudentController.setAdminMenuController(this);
+        initializeSubcontroller("addstudentmenu", addStudentPane);
+        initializeSubcontroller("addspecialitymenu", addSpecialityPane);
+        initializeSubcontroller("addsubjectmenu", addSubjectPane);
 
         var addAdminLoader = FXMLHelpers.makeLoader("addadminmenu");
         addAdminPane.getChildren().add((Pane)addAdminLoader.load());
-        addAdminController = addAdminLoader.getController();
+        var addAdminController = (AdminSubController)addAdminLoader.getController();
         addAdminController.setAdminMenuController(this);
         
         TableIntitializers.addCellFactories(studentsTable);
@@ -58,6 +61,11 @@ public class AdminMenuController {
         TableIntitializers.addCellFactories(subjectsTable);
         TableIntitializers.addCellFactories(userStudentTable);
         TableIntitializers.addCellFactories(userAdminTable);
+        
+        contextMenu = new ContextMenu();
+        removeItem = new MenuItem("Remove");
+        changeItem = new MenuItem("Change");
+        contextMenu.getItems().addAll(removeItem, changeItem);
 
         updateTablesTask = () -> {            
             Platform.runLater(() -> tabPane.setDisable(true));
@@ -84,22 +92,30 @@ public class AdminMenuController {
         new Thread(updateTablesTask).start();
     }
 
+    private void initializeSubcontroller(String fxml, TitledPane addPane) throws IOException {
+        var loader = FXMLHelpers.makeLoader(fxml);
+        addPane.setContent((Pane)loader.load());
+        var controller = (AdminSubController)loader.getController();
+        controller.setAdminMenuController(this);
+    }
+
     @FXML
     private void onStudentsTableClick(MouseEvent event) {
-        if (event.getButton() == MouseButton.SECONDARY) {
-            var contextMenu = new ContextMenu();
-            var removeItem = new MenuItem("Remove");
-            var changeItem = new MenuItem("Change");
+        if (contextMenu.isShowing()) {
+            contextMenu.hide();
+        }
 
-            contextMenu.getItems().addAll(removeItem, changeItem);
+        if (event.getButton() == MouseButton.SECONDARY) {
+            int selectedIndex = studentsTable.getSelectionModel().getSelectedIndex();
+            removeItem.setOnAction(e -> removeModel(modelBundle.getStudents().get(selectedIndex)));
             contextMenu.show(studentsTable, event.getScreenX(), event.getScreenY());
         }
     }
 
-    public void addModel(@SuppressWarnings("all") Model model) {
+    private void actionWithModel(Model model, OperationType operationType) {
         try {
             Client.ostream.writeObject(ClientMessage.builder()
-                                                    .operationType(OperationType.Add)
+                                                    .operationType(operationType)
                                                     .value(model)
                                                     .build()
             );
@@ -117,5 +133,13 @@ public class AdminMenuController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    void addModel(Model model) {
+        actionWithModel(model, OperationType.Add);
+    }
+
+    void removeModel(Model model) {
+        actionWithModel(model, OperationType.Remove);        
     }
 }
