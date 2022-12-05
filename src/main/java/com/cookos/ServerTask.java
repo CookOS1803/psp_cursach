@@ -46,6 +46,7 @@ public class ServerTask implements Runnable {
                             case Subject -> {if (!addSubject(message)) continue;}
                             case SpecialScholarship -> {}
                             case User -> {if (!addUser(message)) continue;}
+                            case Speciality_Subject -> {if (!linkSpecialityAndSubject(message)) continue;}
                         }
                     }
                     case Update -> {}
@@ -57,6 +58,7 @@ public class ServerTask implements Runnable {
                             case Subject -> {if (!removeSubject(message)) continue;}
                             case SpecialScholarship -> {}
                             case User -> {if (!removeUser(message)) continue;}
+                            case Speciality_Subject -> {}
                         }
                     }
                 }
@@ -79,6 +81,52 @@ public class ServerTask implements Runnable {
                 return;
             }
         }
+    }
+
+    private boolean linkSpecialityAndSubject(ClientMessage message) throws IOException {
+        var speciality_subject = (Speciality_Subject)message.getValue();
+
+        try (
+            var subjectDao = new GenericDao<>(Subject.class);
+            var specialityDao = new GenericDao<>(Speciality.class);
+            var performanceDao = new GenericDao<>(Performance.class);
+        ) {            
+
+            var speciality = specialityDao.findByUniqueColumn("id", speciality_subject.getSpecialityId());
+            var subject = subjectDao.findByUniqueColumn("id", speciality_subject.getSubjectId());
+    
+            speciality.getSubjects().add(subject);
+                
+            specialityDao.update(speciality);
+
+            for (var student : speciality.getStudents()) {
+                performanceDao.add(Performance.builder()
+                                              .student(student)
+                                              .subject(subject)
+                                              .build()
+                );
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Error linking speciality and subject")
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        } 
+
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Success)
+                                         .build()
+        );
+        ostream.flush();
+
+        return true;
     }
 
     private boolean removeUser(ClientMessage message) throws IOException {

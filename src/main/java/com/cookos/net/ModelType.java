@@ -6,5 +6,6 @@ public enum ModelType {
     Student,
     Subject,
     User,
-    SpecialScholarship
+    SpecialScholarship,
+    Speciality_Subject
 }

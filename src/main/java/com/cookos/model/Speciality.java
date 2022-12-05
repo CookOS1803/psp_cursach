@@ -17,7 +17,7 @@ import lombok.*;
 @Table(name = "speciality")
 public class Speciality implements Serializable, Model, Identifiable {
 
-    @ManyToMany(targetEntity = Subject.class, cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @ManyToMany(targetEntity = Subject.class, cascade = { CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(
         name = "speciality_subjects", 
         inverseJoinColumns = { @JoinColumn(name = "subjects_id", referencedColumnName = "id") }, 

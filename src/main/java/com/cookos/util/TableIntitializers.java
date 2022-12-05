@@ -1,6 +1,7 @@
 package com.cookos.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.cookos.model.*;
@@ -70,7 +71,7 @@ public class TableIntitializers {
         table.setItems(items);
     }
 
-    public static void subjects(List<Subject> subjects, TableView<List<Object>> table) {
+    public static void subjects(Collection<Subject> subjects, TableView<List<Object>> table) {
         ObservableList<List<Object>> items = FXCollections.observableArrayList();
 
         for (var s : subjects) {
@@ -110,4 +111,5 @@ public class TableIntitializers {
         userStudentTable.setItems(studentItems);
         userAdminTable.setItems(adminItems);
     }
+
 }

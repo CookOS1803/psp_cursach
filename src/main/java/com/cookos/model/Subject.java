@@ -17,12 +17,12 @@ import lombok.*;
 @Table(name = "subjects")
 public class Subject implements Serializable, Model, Identifiable {
 
-    @ManyToMany(targetEntity = Speciality.class, cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "speciality_subjects", 
-        joinColumns = { @JoinColumn(name = "subjects_id", referencedColumnName = "id") }, 
-        inverseJoinColumns = { @JoinColumn(name = "speciality_id", referencedColumnName = "id") }
-    )
+    @ManyToMany(targetEntity = Speciality.class, mappedBy = "subjects", fetch = FetchType.LAZY)
+    //@JoinTable(
+    //    name = "speciality_subjects", 
+    //    joinColumns = { @JoinColumn(name = "subjects_id", referencedColumnName = "id") }, 
+    //    inverseJoinColumns = { @JoinColumn(name = "speciality_id", referencedColumnName = "id") }
+    //)
     @Builder.Default
     @ToString.Exclude
     private Set<Speciality> specialities = new HashSet<>();
