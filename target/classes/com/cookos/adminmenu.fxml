@@ -72,7 +72,7 @@
                                     <Label text="Named" GridPane.rowIndex="2" />
                                     <Label fx:id="socialLabel" text="0" GridPane.columnIndex="1" />
                                     <Label fx:id="personalLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Label fx:id="namepLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label fx:id="namedLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                  </children>
                               </GridPane>
                            </children>

@@ -20,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
@@ -45,6 +46,9 @@ public class AdminMenuController {
     @FXML private TableView<List<Object>> userStudentTable;
     @FXML private TableView<List<Object>> userAdminTable;
     @FXML private TableView<List<Object>> subjectsOfSpecialitiesTable;
+    @FXML private Label socialLabel;
+    @FXML private Label personalLabel;
+    @FXML private Label namedLabel;
     private ModelBundle modelBundle;
     private List<Identifiable> subjectsOfSpeciality = new ArrayList<>();
 
@@ -202,6 +206,10 @@ public class AdminMenuController {
 
     @FXML
     private void showPerformance(MouseEvent event) {
+        socialLabel.setText("");
+        personalLabel.setText("");
+        namedLabel.setText("");
+
         int selectedIndex = studentsTable.getSelectionModel().getSelectedIndex();
 
         if (selectedIndex >= 0) {
@@ -214,6 +222,10 @@ public class AdminMenuController {
                                      .get(0);
             
             TableIntitializers.performance(student.getPerformance(), performanceTable);
+
+            socialLabel.setText(String.valueOf(student.getSpecialScholarship().getSocial()));
+            personalLabel.setText(String.valueOf(student.getSpecialScholarship().getPersonal()));
+            namedLabel.setText(String.valueOf(student.getSpecialScholarship().getNamed()));
         } else {
             performanceTable.getItems().clear();
         }
