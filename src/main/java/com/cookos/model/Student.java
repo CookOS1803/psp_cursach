@@ -23,7 +23,7 @@ import lombok.ToString;
 @Table(name = "students")
 public class Student implements Serializable, Model, Identifiable {
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
     @ToString.Exclude
     @Builder.Default
     private Set<Performance> performance = new HashSet<>();

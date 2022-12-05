@@ -1,6 +1,7 @@
 package com.cookos.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,12 +39,14 @@ public class AdminMenuController {
     @FXML private FlowPane addAdminPane;
 
     @FXML private TableView<List<Object>> studentsTable;
+    @FXML private TableView<List<Object>> performanceTable;
     @FXML private TableView<List<Object>> specialitiesTable;
     @FXML private TableView<List<Object>> subjectsTable;
     @FXML private TableView<List<Object>> userStudentTable;
     @FXML private TableView<List<Object>> userAdminTable;
     @FXML private TableView<List<Object>> subjectsOfSpecialitiesTable;
     private ModelBundle modelBundle;
+    private List<Identifiable> subjectsOfSpeciality = new ArrayList<>();
 
     private ContextMenu contextMenu;
     private MenuItem removeItem;
@@ -66,6 +69,7 @@ public class AdminMenuController {
         addAdminController.setAdminMenuController(this);
         
         TableIntitializers.addCellFactories(studentsTable);
+        TableIntitializers.addCellFactories(performanceTable);
         TableIntitializers.addCellFactories(specialitiesTable);
         TableIntitializers.addCellFactories(subjectsTable);
         TableIntitializers.addCellFactories(userStudentTable);
@@ -97,7 +101,7 @@ public class AdminMenuController {
                 TableIntitializers.subjects(modelBundle.getSubjects(), subjectsTable);
                 TableIntitializers.users(modelBundle.getUsers(), userStudentTable, userAdminTable);
                 showSubjectsOfSpeciality(null);
-                
+                showPerformance(null);
 
                 tabPane.setDisable(false);
             });
@@ -140,11 +144,24 @@ public class AdminMenuController {
         
                     addModel(Speciality_Subject.builder()
                                                .specialityId(specialityId)
-                                               .subjectId(answer.get().getId())
+                                               .subjectId(answer.get().getSubject().getId())
                                                .build()
                     );
                 }
             });
+        }
+    }
+
+    @FXML
+    private void onPerformanceTableClick(MouseEvent event) {
+
+    }
+
+    @FXML
+    private void onSubjectsForSpecialityTableClick(MouseEvent event) {
+                
+        if (!subjectsOfSpeciality.isEmpty()) {
+            onTableClick(event, subjectsOfSpecialitiesTable, subjectsOfSpeciality);
         }
     }
 
@@ -172,8 +189,33 @@ public class AdminMenuController {
                                         .get(0);
             
             TableIntitializers.subjects(speciality.getSubjects(), subjectsOfSpecialitiesTable);
+
+            subjectsOfSpeciality.clear();
+
+            for (var subject : speciality.getSubjects()) {
+                subjectsOfSpeciality.add(Speciality_Subject.builder().specialityId(id).subjectId(subject.getId()).build());
+            }
         } else {
             subjectsOfSpecialitiesTable.getItems().clear();
+        }
+    }
+
+    @FXML
+    private void showPerformance(MouseEvent event) {
+        int selectedIndex = studentsTable.getSelectionModel().getSelectedIndex();
+
+        if (selectedIndex >= 0) {
+            int id = (Integer)studentsTable.getItems().get(selectedIndex).get(0);
+
+            var student = modelBundle.getStudents()
+                                     .stream()
+                                     .filter(s -> s.getId() == id)
+                                     .toList()
+                                     .get(0);
+            
+            TableIntitializers.performance(student.getPerformance(), performanceTable);
+        } else {
+            performanceTable.getItems().clear();
         }
     }
 

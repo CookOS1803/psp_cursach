@@ -42,10 +42,10 @@ public class ServerTask implements Runnable {
                         switch (message.getValue().getModelType()) {
                             case Performance -> {}
                             case Student -> {if (!addStudent(message)) continue;}
-                            case Speciality -> {if (!addSpeciality(message)) continue;}
-                            case Subject -> {if (!addSubject(message)) continue;}
+                            case Speciality -> {if (!add(message, Speciality.class)) continue;}
+                            case Subject -> {if (!add(message, Subject.class)) continue;}
                             case SpecialScholarship -> {}
-                            case User -> {if (!addUser(message)) continue;}
+                            case User -> {if (!add(message, User.class)) continue;}
                             case Speciality_Subject -> {if (!linkSpecialityAndSubject(message)) continue;}
                         }
                     }
@@ -54,11 +54,14 @@ public class ServerTask implements Runnable {
                         switch (message.getValue().getModelType()) {
                             case Performance -> {}
                             case Student -> {if (!removeStudent(message)) continue;}
-                            case Speciality -> {if (!removeSpeciality(message)) continue;}
-                            case Subject -> {if (!removeSubject(message)) continue;}
+                            case Speciality -> {
+                                if (!remove(message, Speciality.class, "Can't remove speciality when it has students"))
+                                    continue;
+                            }
+                            case Subject -> {if (!remove(message, Subject.class)) continue;}
                             case SpecialScholarship -> {}
-                            case User -> {if (!removeUser(message)) continue;}
-                            case Speciality_Subject -> {}
+                            case User -> {if (!remove(message, Subject.class)) continue;}
+                            case Speciality_Subject -> {if (!unlinkSpecialityAndSubject(message)) continue;}
                         }
                     }
                 }
@@ -81,6 +84,56 @@ public class ServerTask implements Runnable {
                 return;
             }
         }
+    }
+
+    private boolean unlinkSpecialityAndSubject(ClientMessage message) throws IOException {
+        var speciality_subject = (Speciality_Subject)message.getValue();
+
+        try (
+            var subjectDao = new GenericDao<>(Subject.class);
+            var specialityDao = new GenericDao<>(Speciality.class);
+            var performanceDao = new GenericDao<>(Performance.class);
+            var studentDao = new GenericDao<>(Student.class)
+        ) {            
+
+            var speciality = specialityDao.findByUniqueColumn("id", speciality_subject.getSpecialityId());
+            var subject = subjectDao.findByUniqueColumn("id", speciality_subject.getSubjectId());
+    
+            speciality.getSubjects().remove(subject);
+                
+            specialityDao.update(speciality);
+
+            for (var student : speciality.getStudents()) {
+                var performanceId = subject.getPerformance()
+                                           .stream()
+                                           .filter(p -> p.getStudent().getId() == student.getId()).toList()
+                                           .get(0)
+                                           .getId();
+                
+                var performance = performanceDao.findByUniqueColumn("id", performanceId);        
+                performanceDao.remove(performance);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Error while unlinking speciality and subject")
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        } 
+
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Success)
+                                         .build()
+        );
+        ostream.flush();
+
+        return true;
     }
 
     private boolean linkSpecialityAndSubject(ClientMessage message) throws IOException {
@@ -129,71 +182,21 @@ public class ServerTask implements Runnable {
         return true;
     }
 
-    private boolean removeUser(ClientMessage message) throws IOException {
-        try (var userDao = new GenericDao<>(User.class)) {
-            var user = userDao.findByUniqueColumn("id", ((User)message.getValue()).getId());
-
-            userDao.remove(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            ostream.writeObject(ServerMessage.builder()
-                                             .answerType(AnswerType.Failure)
-                                             .message("Error while removing user")
-                                             .build()
-            );
-            ostream.flush();
-
-            return false;
-        }
-
-        ostream.writeObject(ServerMessage.builder()
-                                         .answerType(AnswerType.Success)
-                                         .build()
-        );
-        ostream.flush();
-
-        return true;
+    private <T> boolean remove(ClientMessage message, Class<T> type) throws IOException {
+        return remove(message, type, "Error while removing " + message.getValue().getModelType());
     }
 
-    private boolean removeSubject(ClientMessage message) throws IOException {
-        try (var subjectDao = new GenericDao<>(Subject.class)) {
-            var subject = subjectDao.findByUniqueColumn("id", ((Subject)message.getValue()).getId());
+    private <T> boolean remove(ClientMessage message, Class<T> type, String errorMessage) throws IOException {
+        try (var dao = new GenericDao<>(type)) {
+            var persistedValue = dao.findByUniqueColumn("id", ((Identifiable)message.getValue()).getId());
 
-            subjectDao.remove(subject);
+            dao.remove(persistedValue);
         } catch (Exception e) {
             e.printStackTrace();
 
             ostream.writeObject(ServerMessage.builder()
                                              .answerType(AnswerType.Failure)
-                                             .message("Error while removing subject")
-                                             .build()
-            );
-            ostream.flush();
-
-            return false;
-        }
-
-        ostream.writeObject(ServerMessage.builder()
-                                         .answerType(AnswerType.Success)
-                                         .build()
-        );
-        ostream.flush();
-
-        return true;
-    }
-
-    private boolean removeSpeciality(ClientMessage message) throws IOException {
-        try (var specialityDao = new GenericDao<>(Speciality.class)) {
-            var speciality = specialityDao.findByUniqueColumn("id", ((Speciality)message.getValue()).getId());
-
-            specialityDao.remove(speciality);
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            ostream.writeObject(ServerMessage.builder()
-                                             .answerType(AnswerType.Failure)
-                                             .message("Error while removing speciality")
+                                             .message(errorMessage)
                                              .build()
             );
             ostream.flush();
@@ -242,65 +245,16 @@ public class ServerTask implements Runnable {
         return true;
     }
 
-    private boolean addUser(ClientMessage message) throws IOException {
-        var user = (User)message.getValue();
+    @SuppressWarnings("unchecked")
+    private <T> boolean add(ClientMessage message, Class<T> type) throws IOException {
+        var newValue = (T)message.getValue();
 
-        try (var userDao = new GenericDao<>(User.class)) {
-            userDao.add(user);
+        try (var dao = new GenericDao<>(type)) {
+            dao.add(newValue);
         } catch (Exception e) {
             ostream.writeObject(ServerMessage.builder()
                                              .answerType(AnswerType.Failure)
-                                             .message("Duplicate user id")
-                                             .build()
-            );
-            ostream.flush();
-
-            return false;
-        }
-        
-        ostream.writeObject(ServerMessage.builder()
-                                         .answerType(AnswerType.Success)
-                                         .build()
-        );
-        ostream.flush();
-
-        return true;
-    }
-
-    private boolean addSubject(ClientMessage message) throws IOException {
-        var subject = (Subject)message.getValue();
-
-        try (var subjectDao = new GenericDao<>(Subject.class)) {
-            subjectDao.add(subject);
-        } catch (Exception e) {
-            ostream.writeObject(ServerMessage.builder()
-                                             .answerType(AnswerType.Failure)
-                                             .message("Duplicate subject id")
-                                             .build()
-            );
-            ostream.flush();
-
-            return false;
-        }
-        
-        ostream.writeObject(ServerMessage.builder()
-                                         .answerType(AnswerType.Success)
-                                         .build()
-        );
-        ostream.flush();
-
-        return true;
-    }
-
-    private boolean addSpeciality(ClientMessage message) throws IOException {
-        var speciality = (Speciality)message.getValue();
-
-        try (var specialityDao = new GenericDao<>(Speciality.class)) {
-            specialityDao.add(speciality);
-        } catch (Exception e) {
-            ostream.writeObject(ServerMessage.builder()
-                                             .answerType(AnswerType.Failure)
-                                             .message("Duplicate speciality id")
+                                             .message("Duplicate %s id".formatted(message.getValue().getModelType()))
                                              .build()
             );
             ostream.flush();
@@ -419,15 +373,19 @@ public class ServerTask implements Runnable {
             var specialityDao = new GenericDao<>(Speciality.class);
             var userDao = new GenericDao<>(User.class);
         ) {
-            ostream.writeObject(ModelBundle.builder()
-                                           .students(studentDao.selectAll())
-                                           .performances(performanceDao.selectAll())
-                                           .specialScholarships(specialScholarshipDao.selectAll())
-                                           .subjects(subjectDao.selectAll())
-                                           .specialities(specialityDao.selectAll())
-                                           .users(userDao.selectAll())
-                                           .build()
-            );
+            var modelBundle = ModelBundle.builder()
+                                         .students(studentDao.selectAll())
+                                         .performances(performanceDao.selectAll())
+                                         .specialScholarships(specialScholarshipDao.selectAll())
+                                         .subjects(subjectDao.selectAll())
+                                         .specialities(specialityDao.selectAll())
+                                         .users(userDao.selectAll())
+                                         .build();
+            // eager ne rabotaet, poetomu vot
+            for (var student : modelBundle.getStudents()) {
+                student.getPerformance().forEach(p -> {});
+            }
+            ostream.writeObject(modelBundle);
             ostream.flush();
         } catch (Exception e) {
             e.printStackTrace();

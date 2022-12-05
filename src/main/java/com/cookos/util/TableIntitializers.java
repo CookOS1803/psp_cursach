@@ -112,4 +112,23 @@ public class TableIntitializers {
         userAdminTable.setItems(adminItems);
     }
 
+    public static void performance(Collection<Performance> performances, TableView<List<Object>> table) {
+        ObservableList<List<Object>> items = FXCollections.observableArrayList();
+
+        for (var p : performances) {
+            var row = new ArrayList<Object>() {
+                {
+                    add(p.getId());
+                    add(p.getSubject().getName());
+                    add(p.getTotalScore());
+                    add(p.getMissedHours());
+                }
+            };
+            
+            items.add(row);
+        }
+
+        table.setItems(items);
+    }
+
 }

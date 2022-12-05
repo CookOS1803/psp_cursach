@@ -1,14 +1,18 @@
 package com.cookos.model;
 
-public class SubjectForSpeciality extends Subject {
+import lombok.Getter;
+
+@Getter
+public class SubjectForSpeciality {
+
+    private Subject subject;
 
     public SubjectForSpeciality(Subject subject) {
-        setId(subject.getId());
-        setName(subject.getName());
+        this.subject = subject;
     }
 
     @Override
     public String toString() {
-        return String.valueOf(getId()) + ", " + getName();
+        return String.valueOf(subject.getId()) + ", " + subject.getName();
     }
 }

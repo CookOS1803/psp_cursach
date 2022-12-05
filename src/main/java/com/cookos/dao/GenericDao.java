@@ -3,6 +3,8 @@ package com.cookos.dao;
 import java.util.List;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaUpdate;
 
 public class GenericDao<T> implements AutoCloseable {
     protected static final EntityManagerFactory entityManagerFactory;
@@ -65,8 +67,7 @@ public class GenericDao<T> implements AutoCloseable {
     public void add(T newRecord) throws Exception {
         entityManager.getTransaction().begin();
         entityManager.persist(newRecord);
-        entityManager.getTransaction().commit();
-        
+        entityManager.getTransaction().commit();        
     }
 
     public void remove(T existingRecord) throws Exception {

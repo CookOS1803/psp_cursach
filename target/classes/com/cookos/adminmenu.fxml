@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" rotateGraphic="true" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cookos.controllers.AdminMenuController">
@@ -15,22 +21,67 @@
          <content>
             <VBox>
                <children>
-                  <TableView fx:id="studentsTable" onMouseReleased="#onStudentsTableClick" VBox.vgrow="ALWAYS">
-                     <columns>
-                        <TableColumn minWidth="50.0" prefWidth="75.0" text="Id" />
-                        <TableColumn minWidth="50.0" prefWidth="75.0" text="Last name" />
-                        <TableColumn minWidth="50.0" prefWidth="75.0" text="First name" />
-                        <TableColumn minWidth="50.0" prefWidth="70.0" text="Patronymic" />
-                        <TableColumn minWidth="50.0" prefWidth="63.0" text="Phone" />
-                        <TableColumn minWidth="50.0" prefWidth="75.0" text="Address" />
-                        <TableColumn minWidth="50.0" prefWidth="75.0" text="Email" />
-                        <TableColumn minWidth="50.0" prefWidth="75.0" text="Education form" />
-                        <TableColumn minWidth="50.0" prefWidth="75.0" text="Speciality" />
-                     </columns>
-                     <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                     </columnResizePolicy>
-                  </TableView>
+                  <HBox VBox.vgrow="ALWAYS">
+                     <children>
+                        <SplitPane dividerPositions="0.5591397849462365" HBox.hgrow="ALWAYS">
+                           <items>
+                              <TableView fx:id="studentsTable" onMousePressed="#showPerformance" onMouseReleased="#onStudentsTableClick">
+                                 <columns>
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Id" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Last name" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="First name" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Patronymic" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Phone" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Address" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Email" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Education form" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Speciality" />
+                                 </columns>
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                              </TableView>
+                              <TableView fx:id="performanceTable" layoutX="10.0" layoutY="10.0" onMouseReleased="#onPerformanceTableClick">
+                                 <columns>
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Id" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Subject" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Total score" />
+                                    <TableColumn minWidth="15.0" prefWidth="-1.0" text="Missed hours" />
+                                 </columns>
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                              </TableView>
+                           </items>
+                        </SplitPane>
+                        <VBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="140.0" HBox.hgrow="NEVER">
+                           <children>
+                              <GridPane>
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="Social" />
+                                    <Label text="Personal" GridPane.rowIndex="1" />
+                                    <Label text="Named" GridPane.rowIndex="2" />
+                                    <Label fx:id="socialLabel" text="0" GridPane.columnIndex="1" />
+                                    <Label fx:id="personalLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label fx:id="namepLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                 </children>
+                              </GridPane>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </HBox>
                   <TitledPane fx:id="addStudentPane" expanded="false" text="Add student" />
                </children>
             </VBox>
@@ -40,7 +91,7 @@
          <content>
             <VBox>
                <children>
-                  <SplitPane dividerPositions="0.63" VBox.vgrow="ALWAYS">
+                  <SplitPane dividerPositions="0.6789297658862876" VBox.vgrow="ALWAYS">
                      <items>
                         <TableView fx:id="specialitiesTable" onMousePressed="#showSubjectsOfSpeciality" onMouseReleased="#onSpecialitiesTableClick">
                            <columns>
@@ -56,7 +107,7 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
-                        <TableView fx:id="subjectsOfSpecialitiesTable">
+                        <TableView fx:id="subjectsOfSpecialitiesTable" onMouseReleased="#onSubjectsForSpecialityTableClick">
                            <columns>
                               <TableColumn minWidth="50.0" prefWidth="75.0" text="Id" />
                               <TableColumn minWidth="50.0" prefWidth="75.0" text="Name" />
