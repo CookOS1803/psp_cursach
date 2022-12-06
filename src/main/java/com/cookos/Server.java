@@ -5,6 +5,8 @@ import java.net.*;
 
 import org.apache.logging.log4j.*;
 
+import com.cookos.server.LoginServerTask;
+
 public class Server {
     
     private static final Logger logger = LogManager.getLogger(Server.class);
@@ -17,7 +19,7 @@ public class Server {
 
                 logger.info("%s:%d connected".formatted(socket.getInetAddress(), socket.getPort()));
 
-                var thread = new Thread(new ServerTask(socket));
+                var thread = new Thread(new LoginServerTask(socket));
                 thread.start();
             }           
 

@@ -1,36 +1,25 @@
-package com.cookos;
+package com.cookos.server;
 
 import java.io.*;
-import java.net.*;
-import java.util.Arrays;
 
 import com.cookos.dao.GenericDao;
 import com.cookos.model.*;
 import com.cookos.net.*;
 import com.cookos.util.HashPassword;
 
-public class ServerTask implements Runnable {
-    
+public class AdminServerTask implements Runnable {
+
     private ObjectOutputStream ostream;
     private ObjectInputStream istream;
 
-    public ServerTask(Socket socket) throws IOException
+    public AdminServerTask(ObjectOutputStream ostream, ObjectInputStream istream) throws IOException
     {
-        ostream = new ObjectOutputStream(socket.getOutputStream());
-        ostream.flush();
-        istream = new ObjectInputStream(socket.getInputStream());
+        this.ostream = ostream;
+        this.istream = istream;
     }
 
     @Override
     public void run() {
-        
-        try {
-            handleLogin();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        
         sendModels();
 
         while (true) {
@@ -40,38 +29,35 @@ public class ServerTask implements Runnable {
                 switch (message.getOperationType()) {
                     case Add -> {
                         switch (message.getValue().getModelType()) {
-                            case Performance -> {}
-                            case Student -> {if (!addStudent(message)) continue;}
-                            case Speciality -> {if (!add(message, Speciality.class)) continue;}
-                            case Subject -> {if (!add(message, Subject.class)) continue;}
-                            case SpecialScholarship -> {}
-                            case User -> {if (!add(message, User.class)) continue;}
-                            case Speciality_Subject -> {if (!linkSpecialityAndSubject(message)) continue;}
+                            case Performance -> unimplementedOperation();
+                            case Student -> addStudent(message);
+                            case Speciality -> add(message, Speciality.class);
+                            case Subject -> add(message, Subject.class);
+                            case SpecialScholarship -> unimplementedOperation();
+                            case User -> add(message, User.class);
+                            case Speciality_Subject -> linkSpecialityAndSubject(message);
                         }
                     }
                     case Update -> {
                         switch (message.getValue().getModelType()) {
-                            case Performance -> {if (!update(message, Performance.class, "AAAAAAA")) continue;}
-                            case Student -> {}
-                            case Speciality -> {}
-                            case Subject -> {}
-                            case SpecialScholarship -> {}
-                            case User -> {}
-                            case Speciality_Subject -> {}
+                            case Performance -> update(message, Performance.class);
+                            case Student -> unimplementedOperation();
+                            case Speciality -> unimplementedOperation();
+                            case Subject -> unimplementedOperation();
+                            case SpecialScholarship -> update(message, SpecialScholarship.class);
+                            case User -> unimplementedOperation();
+                            case Speciality_Subject -> unimplementedOperation();
                         }
                     }
                     case Remove -> {
                         switch (message.getValue().getModelType()) {
-                            case Performance -> {}
-                            case Student -> {if (!removeStudent(message)) continue;}
-                            case Speciality -> {
-                                if (!remove(message, Speciality.class, "Can't remove speciality when it has students"))
-                                    continue;
-                            }
-                            case Subject -> {if (!remove(message, Subject.class)) continue;}
-                            case SpecialScholarship -> {}
-                            case User -> {if (!remove(message, Subject.class)) continue;}
-                            case Speciality_Subject -> {if (!unlinkSpecialityAndSubject(message)) continue;}
+                            case Performance -> unimplementedOperation();
+                            case Student -> removeStudent(message);
+                            case Speciality -> remove(message, Speciality.class, "Can't remove speciality when it has students");
+                            case Subject -> remove(message, Subject.class);
+                            case SpecialScholarship -> unimplementedOperation();
+                            case User -> remove(message, Subject.class);
+                            case Speciality_Subject -> unlinkSpecialityAndSubject(message);
                         }
                     }
                 }
@@ -94,10 +80,25 @@ public class ServerTask implements Runnable {
                 return;
             }
         }
+        
+    }
+
+    
+    private void unimplementedOperation() throws IOException {
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Failure)
+                                         .message("Unimplemented operation")
+                                         .build()
+        );
+        ostream.flush();
+    }
+
+    private <T> void update(ClientMessage message, Class<T> type) throws IOException {
+        update(message, type, "Error while updating " + message.getValue().getModelType());
     }
 
     @SuppressWarnings("unchecked")
-    private <T> boolean update(ClientMessage message, Class<T> type, String errorMessage) throws IOException {
+    private <T> void update(ClientMessage message, Class<T> type, String errorMessage) throws IOException {
         
         try (var dao = new GenericDao<>(type)) {
             //var persistedValue = dao.findByUniqueColumn("id", ((Identifiable)message.getValue()).getId());
@@ -114,7 +115,7 @@ public class ServerTask implements Runnable {
             );
             ostream.flush();
 
-            return false;
+            return;
         }
 
         ostream.writeObject(ServerMessage.builder()
@@ -122,11 +123,9 @@ public class ServerTask implements Runnable {
                                          .build()
         );
         ostream.flush();
-
-        return true;
     }
 
-    private boolean unlinkSpecialityAndSubject(ClientMessage message) throws IOException {
+    private void unlinkSpecialityAndSubject(ClientMessage message) throws IOException {
         var speciality_subject = (Speciality_Subject)message.getValue();
 
         try (
@@ -163,7 +162,7 @@ public class ServerTask implements Runnable {
             );
             ostream.flush();
 
-            return false;
+            return;
         } 
 
         ostream.writeObject(ServerMessage.builder()
@@ -171,11 +170,9 @@ public class ServerTask implements Runnable {
                                          .build()
         );
         ostream.flush();
-
-        return true;
     }
 
-    private boolean linkSpecialityAndSubject(ClientMessage message) throws IOException {
+    private void linkSpecialityAndSubject(ClientMessage message) throws IOException {
         var speciality_subject = (Speciality_Subject)message.getValue();
 
         try (
@@ -195,7 +192,7 @@ public class ServerTask implements Runnable {
                 );
                 ostream.flush();
 
-                return false;
+                return;
             }
     
             speciality.getSubjects().add(subject);
@@ -220,7 +217,7 @@ public class ServerTask implements Runnable {
             );
             ostream.flush();
 
-            return false;
+            return;
         } 
 
         ostream.writeObject(ServerMessage.builder()
@@ -228,15 +225,13 @@ public class ServerTask implements Runnable {
                                          .build()
         );
         ostream.flush();
-
-        return true;
     }
 
-    private <T> boolean remove(ClientMessage message, Class<T> type) throws IOException {
-        return remove(message, type, "Error while removing " + message.getValue().getModelType());
+    private <T> void remove(ClientMessage message, Class<T> type) throws IOException {
+        remove(message, type, "Error while removing " + message.getValue().getModelType());
     }
 
-    private <T> boolean remove(ClientMessage message, Class<T> type, String errorMessage) throws IOException {
+    private <T> void remove(ClientMessage message, Class<T> type, String errorMessage) throws IOException {
         try (var dao = new GenericDao<>(type)) {
             var persistedValue = dao.findByUniqueColumn("id", ((Identifiable)message.getValue()).getId());
 
@@ -251,7 +246,7 @@ public class ServerTask implements Runnable {
             );
             ostream.flush();
 
-            return false;
+            return;
         }
 
         ostream.writeObject(ServerMessage.builder()
@@ -259,11 +254,9 @@ public class ServerTask implements Runnable {
                                          .build()
         );
         ostream.flush();
-
-        return true;
     }
 
-    private boolean removeStudent(ClientMessage message) throws IOException {
+    private void removeStudent(ClientMessage message) throws IOException {
         try (
             var studentDao = new GenericDao<>(Student.class);
             var userDao = new GenericDao<>(User.class)
@@ -283,7 +276,7 @@ public class ServerTask implements Runnable {
             );
             ostream.flush();
 
-            return false;
+            return;
         }
 
         ostream.writeObject(ServerMessage.builder()
@@ -291,12 +284,10 @@ public class ServerTask implements Runnable {
                                          .build()
         );
         ostream.flush();
-
-        return true;
     }
 
     @SuppressWarnings("unchecked")
-    private <T> boolean add(ClientMessage message, Class<T> type) throws IOException {
+    private <T> void add(ClientMessage message, Class<T> type) throws IOException {
         var newValue = (T)message.getValue();
 
         try (var dao = new GenericDao<>(type)) {
@@ -309,7 +300,7 @@ public class ServerTask implements Runnable {
             );
             ostream.flush();
 
-            return false;
+            return;
         }
         
         ostream.writeObject(ServerMessage.builder()
@@ -317,11 +308,9 @@ public class ServerTask implements Runnable {
                                          .build()
         );
         ostream.flush();
-
-        return true;
     }
 
-    private boolean addStudent(ClientMessage message) throws Exception {
+    private void addStudent(ClientMessage message) throws Exception {
         var student = (Student)message.getValue();
 
         try (var specialityDao = new GenericDao<>(Speciality.class)) {
@@ -335,13 +324,26 @@ public class ServerTask implements Runnable {
                 );
                 ostream.flush();
 
-                return false;
+                return;
             }
 
             student.setSpeciality(speciality);
         }
 
         
+
+        try (var studentDao = new GenericDao<>(Student.class)) {
+            studentDao.add(student);
+        } catch (Exception e) {
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Invalid student id")
+                                             .build()
+            );
+            ostream.flush();
+
+            return;
+        }
 
         try (var userDao = new GenericDao<>(User.class)) {
             var login = String.valueOf(student.getId());
@@ -360,20 +362,7 @@ public class ServerTask implements Runnable {
             );
             ostream.flush();
 
-            return false;
-        }
-
-        try (var studentDao = new GenericDao<>(Student.class)) {
-            studentDao.add(student);
-        } catch (Exception e) {
-            ostream.writeObject(ServerMessage.builder()
-                                             .answerType(AnswerType.Failure)
-                                             .message("Duplicate student id")
-                                             .build()
-            );
-            ostream.flush();
-
-            return false;
+            return;
         }
 
         try (
@@ -402,7 +391,7 @@ public class ServerTask implements Runnable {
             );
             ostream.flush();
 
-            return false;
+            return;
         }
 
         ostream.writeObject(ServerMessage.builder()
@@ -410,8 +399,6 @@ public class ServerTask implements Runnable {
                                          .build()
         );
         ostream.flush();
-
-        return true;
     }
 
     private void sendModels() {
@@ -442,37 +429,4 @@ public class ServerTask implements Runnable {
         }
     }
 
-    private void handleLogin() throws IOException, ClassNotFoundException, Exception {
-        while (true) {
-            var login = (String)istream.readObject();
-            
-            int hashLength = istream.readInt();
-            var password = new byte[hashLength];
-            istream.readFully(password);
-
-            try (var userDao = new GenericDao<>(User.class)) {
-
-                var user = userDao.findByUniqueColumn("login", login);
-
-                if (user == null) {
-                    ostream.writeObject(LoginMessage.WrongLogin);
-                    ostream.flush();
-                    
-                    continue;
-                }
-
-                if (!Arrays.equals(password, user.getPassword())) {
-                    ostream.writeObject(LoginMessage.WrongPassword);
-                    ostream.flush();
-
-                    continue;
-                }
-
-                ostream.writeObject(LoginMessage.Success);
-                ostream.flush();
-            }
-
-            break;
-        }
-    }
 }

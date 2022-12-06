@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import com.cookos.Client;
+import com.cookos.model.UserRole;
 import com.cookos.net.LoginMessage;
 import com.cookos.util.FXMLHelpers;
 import com.cookos.util.HashPassword;
@@ -20,6 +21,7 @@ public class LoginController {
     @FXML private Button submitButton;
 
     private LoginMessage answer = null;
+    private UserRole role = null;
     
     @FXML
     private void submit() throws NoSuchAlgorithmException, IOException, ClassNotFoundException {
@@ -48,9 +50,19 @@ public class LoginController {
 
             if (answer == LoginMessage.Success) {
                 
+                try {
+                    role = (UserRole)Client.istream.readObject();
+                } catch (ClassNotFoundException | IOException e1) {
+                    e1.printStackTrace();
+                    return;
+                }
+
+
                 Platform.runLater(() -> {
+                    var fxml = role == UserRole.Admin ? "adminmenu" : "studentmenu";
+
                     try {
-                        FXMLHelpers.setRoot("adminmenu");
+                        FXMLHelpers.setRoot(fxml);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -59,12 +71,20 @@ public class LoginController {
             }
 
             Platform.runLater(() -> {
-                resultLabel.setText(answer.toString());
+                resultLabel.setText(messageToString());
                 loginField.setDisable(false);
                 passwordField.setDisable(false);
                 submitButton.setDisable(false);
             });
         }).start();
         
+    }
+
+    private String messageToString() {
+        return switch (answer) {
+            case Success -> "Успешный вход";
+            case WrongLogin -> "Неправильный логин";
+            case WrongPassword -> "Неправильный пароль";
+        };
     }
 }

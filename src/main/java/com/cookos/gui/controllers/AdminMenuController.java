@@ -9,6 +9,7 @@ import com.cookos.Client;
 import com.cookos.gui.dialogs.*;
 import com.cookos.model.Identifiable;
 import com.cookos.model.Model;
+import com.cookos.model.SpecialScholarship;
 import com.cookos.model.Speciality_Subject;
 import com.cookos.model.SubjectForSpeciality;
 import com.cookos.net.*;
@@ -50,6 +51,7 @@ public class AdminMenuController {
     @FXML private Label namedLabel;
     private ModelBundle modelBundle;
     private List<Identifiable> subjectsOfSpeciality = new ArrayList<>();
+    private SpecialScholarship currentSpecialScholarship = null;
 
     private ContextMenu contextMenu;
     private MenuItem removeItem;
@@ -58,6 +60,7 @@ public class AdminMenuController {
     private ChoiceDialog<SubjectForSpeciality> addSubjectDialog;
 
     private PerformanceChangeDialog performanceChangeDialog = new PerformanceChangeDialog();
+    private SpecialScholarshipChangeDialog scholarshipChangeDialog = new SpecialScholarshipChangeDialog();
 
     private Runnable updateTablesTask;
     
@@ -243,6 +246,8 @@ public class AdminMenuController {
         personalLabel.setText("");
         namedLabel.setText("");
 
+        currentSpecialScholarship = null;
+
         int selectedIndex = studentsTable.getSelectionModel().getSelectedIndex();
 
         if (selectedIndex >= 0) {
@@ -256,9 +261,11 @@ public class AdminMenuController {
             
             TableIntitializers.performance(student.getPerformance(), performanceTable);
 
-            socialLabel.setText(String.valueOf(student.getSpecialScholarship().getSocial()));
-            personalLabel.setText(String.valueOf(student.getSpecialScholarship().getPersonal()));
-            namedLabel.setText(String.valueOf(student.getSpecialScholarship().getNamed()));
+            currentSpecialScholarship = student.getSpecialScholarship();
+
+            socialLabel.setText(String.valueOf(currentSpecialScholarship.getSocial()));
+            personalLabel.setText(String.valueOf(currentSpecialScholarship.getPersonal()));
+            namedLabel.setText(String.valueOf(currentSpecialScholarship.getNamed()));
         } else {
             performanceTable.getItems().clear();
         }
@@ -294,6 +301,20 @@ public class AdminMenuController {
         }
     }
 
+    @FXML
+    private void changeSpecialScholarship() {
+        if (currentSpecialScholarship == null) {
+            return;
+        }
+
+        scholarshipChangeDialog.setChangeableValue(currentSpecialScholarship);
+        var answer = scholarshipChangeDialog.showAndWait();
+
+        if (answer.isPresent()) {
+            updateModel(answer.get());
+        }
+    }
+
     private void actionWithModel(Model model, OperationType operationType) {
         try {
             Client.ostream.writeObject(ClientMessage.builder()
@@ -309,9 +330,9 @@ public class AdminMenuController {
                 var alert = new Alert(AlertType.ERROR);
                 alert.setHeaderText(message.getMessage());
                 alert.show();
-            } else {
-                new Thread(updateTablesTask).start();
             }
+            
+            new Thread(updateTablesTask).start();
         } catch (Exception e) {
             e.printStackTrace();
         }

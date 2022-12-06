@@ -1,0 +1,76 @@
+package com.cookos.gui.dialogs;
+
+import com.cookos.model.SpecialScholarship;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.VBox;
+
+public class SpecialScholarshipChangeDialog extends ChangeDialog<SpecialScholarship> {
+    
+    private TextField socialField = new TextField();
+    private TextField personalField = new TextField();
+    private TextField namedField = new TextField();
+
+    public SpecialScholarshipChangeDialog() { 
+        super();
+
+        socialField.setPromptText("Social");
+        personalField.setPromptText("Personal");
+        namedField.setPromptText("Named");
+        
+        var vbox = new VBox();
+        vbox.getChildren().addAll(socialField, personalField, namedField);
+
+        getDialogPane().setContent(vbox);
+
+        setResultConverter(button -> {
+            if (button.getButtonData() == ButtonData.CANCEL_CLOSE) {
+                return null;
+            }
+            
+            var alert = new Alert(AlertType.ERROR);
+
+            if (
+                socialField.getText().isBlank() ||
+                personalField.getText().isBlank() ||
+                namedField.getText().isBlank() 
+            ) {
+                alert.setHeaderText("All fields must be filled");
+                alert.show();
+
+                return null;
+            }
+
+            float social, personal, named;
+
+            try {
+                social = Float.valueOf(socialField.getText());
+                personal = Float.valueOf(personalField.getText());
+                named = Float.valueOf(namedField.getText());
+            } catch (Exception e) {
+                alert.setHeaderText("Scholaship must be numeric value");
+                alert.show();
+
+                return null;
+            }
+
+            changeableValue.setSocial(social);
+            changeableValue.setPersonal(personal);
+            changeableValue.setNamed(named);
+
+            return changeableValue;
+        });
+    }
+
+    @Override
+    public void setChangeableValue(SpecialScholarship changeableValue) {
+        super.setChangeableValue(changeableValue);
+
+        socialField.setText(String.valueOf(changeableValue.getSocial()));
+        personalField.setText(String.valueOf(changeableValue.getPersonal()));
+        namedField.setText(String.valueOf(changeableValue.getNamed()));
+    }
+}

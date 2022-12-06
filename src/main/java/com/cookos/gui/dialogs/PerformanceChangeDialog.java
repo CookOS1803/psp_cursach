@@ -26,7 +26,6 @@ public class PerformanceChangeDialog extends ChangeDialog<Performance> {
 
         setResultConverter(button -> {
             if (button.getButtonData() == ButtonData.CANCEL_CLOSE) {
-                System.out.println("cancel");
                 return null;
             }
 
@@ -66,7 +65,6 @@ public class PerformanceChangeDialog extends ChangeDialog<Performance> {
             changeableValue.setMissedHours(hours);
             changeableValue.setTotalScore(score);
 
-            System.out.println("ok");
             return changeableValue;
         });
     }

@@ -16,6 +16,6 @@ public class ChangeDialog<R> extends Dialog<R> {
         getDialogPane().getButtonTypes().add(new ButtonType("Ok", ButtonData.OK_DONE));
         getDialogPane().getButtonTypes().add(new ButtonType("Cancel", ButtonData.CANCEL_CLOSE));
 
-        setHeaderText("Header text");
+        setHeaderText("Write new data");
     }
 }
