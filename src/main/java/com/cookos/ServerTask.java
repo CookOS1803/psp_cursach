@@ -49,7 +49,17 @@ public class ServerTask implements Runnable {
                             case Speciality_Subject -> {if (!linkSpecialityAndSubject(message)) continue;}
                         }
                     }
-                    case Update -> {}
+                    case Update -> {
+                        switch (message.getValue().getModelType()) {
+                            case Performance -> {if (!update(message, Performance.class, "AAAAAAA")) continue;}
+                            case Student -> {}
+                            case Speciality -> {}
+                            case Subject -> {}
+                            case SpecialScholarship -> {}
+                            case User -> {}
+                            case Speciality_Subject -> {}
+                        }
+                    }
                     case Remove -> {
                         switch (message.getValue().getModelType()) {
                             case Performance -> {}
@@ -86,14 +96,43 @@ public class ServerTask implements Runnable {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private <T> boolean update(ClientMessage message, Class<T> type, String errorMessage) throws IOException {
+        
+        try (var dao = new GenericDao<>(type)) {
+            //var persistedValue = dao.findByUniqueColumn("id", ((Identifiable)message.getValue()).getId());
+
+            dao.update((T)message.getValue());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message(errorMessage)
+                                             .build()
+            );
+            ostream.flush();
+
+            return false;
+        }
+
+        ostream.writeObject(ServerMessage.builder()
+                                         .answerType(AnswerType.Success)
+                                         .build()
+        );
+        ostream.flush();
+
+        return true;
+    }
+
     private boolean unlinkSpecialityAndSubject(ClientMessage message) throws IOException {
         var speciality_subject = (Speciality_Subject)message.getValue();
 
         try (
             var subjectDao = new GenericDao<>(Subject.class);
             var specialityDao = new GenericDao<>(Speciality.class);
-            var performanceDao = new GenericDao<>(Performance.class);
-            var studentDao = new GenericDao<>(Student.class)
+            var performanceDao = new GenericDao<>(Performance.class)
         ) {            
 
             var speciality = specialityDao.findByUniqueColumn("id", speciality_subject.getSpecialityId());
@@ -147,6 +186,17 @@ public class ServerTask implements Runnable {
 
             var speciality = specialityDao.findByUniqueColumn("id", speciality_subject.getSpecialityId());
             var subject = subjectDao.findByUniqueColumn("id", speciality_subject.getSubjectId());
+
+            if (speciality.getSubjects().contains(subject)) {
+                ostream.writeObject(ServerMessage.builder()
+                                             .answerType(AnswerType.Failure)
+                                             .message("Speciality already has this subject")
+                                             .build()
+                );
+                ostream.flush();
+
+                return false;
+            }
     
             speciality.getSubjects().add(subject);
                 

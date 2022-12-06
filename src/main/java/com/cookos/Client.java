@@ -10,7 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import com.cookos.controllers.LoadingController;
+import com.cookos.gui.controllers.LoadingController;
 import com.cookos.util.FXMLHelpers;
 
 public class Client extends Application {

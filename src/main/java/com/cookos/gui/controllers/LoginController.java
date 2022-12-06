@@ -1,4 +1,4 @@
-package com.cookos.controllers;
+package com.cookos.gui.controllers;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;

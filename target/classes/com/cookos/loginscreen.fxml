@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cookos.controllers.LoginController">
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cookos.gui.controllers.LoginController">
    <children>
       <Label fx:id="resultLabel" />
       <TextField fx:id="loginField" maxWidth="200.0" prefWidth="200.0" promptText="Login" />

@@ -1,4 +1,4 @@
-package com.cookos.controllers;
+package com.cookos.gui.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.cookos.Client;
+import com.cookos.gui.dialogs.*;
 import com.cookos.model.Identifiable;
 import com.cookos.model.Model;
 import com.cookos.model.Speciality_Subject;
 import com.cookos.model.SubjectForSpeciality;
 import com.cookos.net.*;
-import com.cookos.util.CastHelpers;
-import com.cookos.util.FXMLHelpers;
-import com.cookos.util.TableIntitializers;
+import com.cookos.util.*;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -57,6 +56,8 @@ public class AdminMenuController {
     private MenuItem changeItem;
     private MenuItem addSubjectItem;
     private ChoiceDialog<SubjectForSpeciality> addSubjectDialog;
+
+    private PerformanceChangeDialog performanceChangeDialog = new PerformanceChangeDialog();
 
     private Runnable updateTablesTask;
     
@@ -133,9 +134,17 @@ public class AdminMenuController {
 
         int selectedIndex = specialitiesTable.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
-            addSubjectItem.setVisible(true);
+            addSubjectItem.setVisible(true);            
 
             addSubjectItem.setOnAction(e -> {
+                if (modelBundle.getSubjects().isEmpty()) {
+                    var alert = new Alert(AlertType.ERROR);
+                    alert.setHeaderText("There are no subjects in system");
+                    alert.show();
+                    
+                    return;
+                }
+
                 var subjects = CastHelpers.toSubjectForSpeciality(modelBundle.getSubjects());
                 addSubjectDialog.getItems().clear();
                 addSubjectDialog.getItems().addAll(subjects);
@@ -158,7 +167,31 @@ public class AdminMenuController {
 
     @FXML
     private void onPerformanceTableClick(MouseEvent event) {
+        onTableClick(event, performanceTable, null);
+        
+        removeItem.setVisible(false);
 
+        int selectedIndex = performanceTable.getSelectionModel().getSelectedIndex();
+        
+        if (selectedIndex >= 0) {            
+            changeItem.setOnAction(e -> {
+                int id = (Integer)performanceTable.getItems().get(selectedIndex).get(0);
+
+                var performance = modelBundle.getPerformances()
+                                             .stream()
+                                             .filter(p -> p.getId() == id)
+                                             .toList()
+                                             .get(0);
+                
+                performanceChangeDialog.setChangeableValue(performance);
+
+                var answer = performanceChangeDialog.showAndWait();
+
+                if (answer.isPresent()) {
+                    updateModel(answer.get());
+                }
+            });
+        }
     }
 
     @FXML
@@ -232,6 +265,7 @@ public class AdminMenuController {
     }
 
     private void onTableClick(MouseEvent event, TableView<List<Object>> table, List<Identifiable> identifiables) {
+        changeItem.setVisible(true);
         addSubjectItem.setVisible(false);
 
         if (contextMenu.isShowing()) {
@@ -242,15 +276,20 @@ public class AdminMenuController {
             return;
 
         if (event.getButton() == MouseButton.SECONDARY) {
-            int selectedIndex = table.getSelectionModel().getSelectedIndex();
-            int id = (Integer)table.getItems().get(selectedIndex).get(0);
 
-            removeItem.setOnAction(e -> removeModel(
-                (Model)identifiables.stream()
-                                    .filter(s -> s.getId() == id)
-                                    .collect(Collectors.toList())
-                                    .get(0)
-            ));
+            if (identifiables != null) {
+                removeItem.setVisible(true);
+
+                int selectedIndex = table.getSelectionModel().getSelectedIndex();
+                int id = (Integer)table.getItems().get(selectedIndex).get(0);
+
+                removeItem.setOnAction(e -> removeModel(
+                    (Model)identifiables.stream()
+                                        .filter(s -> s.getId() == id)
+                                        .collect(Collectors.toList())
+                                        .get(0)
+                ));
+            }
             contextMenu.show(table, event.getScreenX(), event.getScreenY());
         }
     }
@@ -283,6 +322,10 @@ public class AdminMenuController {
     }
 
     void removeModel(Model model) {
-        actionWithModel(model, OperationType.Remove);        
+        actionWithModel(model, OperationType.Remove);
+    }
+    
+    void updateModel(Model model) {
+        actionWithModel(model, OperationType.Update);
     }
 }

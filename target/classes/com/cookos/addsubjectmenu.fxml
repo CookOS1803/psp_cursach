@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cookos.controllers.AddSubjectController">
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cookos.gui.controllers.AddSubjectController">
    <right>
       <Button fx:id="addButton" mnemonicParsing="false" onAction="#addSubject" prefHeight="40.0" prefWidth="100.0" text="Add" BorderPane.alignment="BOTTOM_RIGHT">
          <BorderPane.margin>
