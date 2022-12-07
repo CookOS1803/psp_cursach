@@ -36,6 +36,7 @@ public class AdminServerTask implements Runnable {
                             case SpecialScholarship -> unimplementedOperation();
                             case User -> add(message, User.class);
                             case Speciality_Subject -> linkSpecialityAndSubject(message);
+                            case BaseScholarship -> unimplementedOperation();
                         }
                     }
                     case Update -> {
@@ -47,6 +48,7 @@ public class AdminServerTask implements Runnable {
                             case SpecialScholarship -> update(message, SpecialScholarship.class);
                             case User -> unimplementedOperation();
                             case Speciality_Subject -> unimplementedOperation();
+                            case BaseScholarship -> update(message, BaseScholarship.class);
                         }
                     }
                     case Remove -> {
@@ -58,6 +60,7 @@ public class AdminServerTask implements Runnable {
                             case SpecialScholarship -> unimplementedOperation();
                             case User -> remove(message, Subject.class);
                             case Speciality_Subject -> unlinkSpecialityAndSubject(message);
+                            case BaseScholarship -> unimplementedOperation();
                         }
                     }
                 }
@@ -101,10 +104,7 @@ public class AdminServerTask implements Runnable {
     private <T> void update(ClientMessage message, Class<T> type, String errorMessage) throws IOException {
         
         try (var dao = new GenericDao<>(type)) {
-            //var persistedValue = dao.findByUniqueColumn("id", ((Identifiable)message.getValue()).getId());
-
             dao.update((T)message.getValue());
-
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -409,6 +409,7 @@ public class AdminServerTask implements Runnable {
             var subjectDao = new GenericDao<>(Subject.class);
             var specialityDao = new GenericDao<>(Speciality.class);
             var userDao = new GenericDao<>(User.class);
+            var baseScholarshipDao = new GenericDao<>(BaseScholarship.class)
         ) {
             var modelBundle = ModelBundle.builder()
                                          .students(studentDao.selectAll())
@@ -417,6 +418,7 @@ public class AdminServerTask implements Runnable {
                                          .subjects(subjectDao.selectAll())
                                          .specialities(specialityDao.selectAll())
                                          .users(userDao.selectAll())
+                                         .baseScholarship(baseScholarshipDao.selectAll().get(0))
                                          .build();
             // eager ne rabotaet, poetomu vot
             for (var student : modelBundle.getStudents()) {

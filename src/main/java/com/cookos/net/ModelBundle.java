@@ -17,4 +17,5 @@ public class ModelBundle implements Serializable {
     private List<Performance> performances;
     private List<Speciality> specialities;
     private List<Subject> subjects;
+    private BaseScholarship baseScholarship;
 }

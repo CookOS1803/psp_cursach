@@ -24,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseButton;
@@ -49,6 +50,7 @@ public class AdminMenuController {
     @FXML private Label socialLabel;
     @FXML private Label personalLabel;
     @FXML private Label namedLabel;
+    @FXML private Label baseLabel;
     private ModelBundle modelBundle;
     private List<Identifiable> subjectsOfSpeciality = new ArrayList<>();
     private SpecialScholarship currentSpecialScholarship = null;
@@ -110,6 +112,7 @@ public class AdminMenuController {
                 TableIntitializers.users(modelBundle.getUsers(), userStudentTable, userAdminTable);
                 showSubjectsOfSpeciality(null);
                 showPerformance(null);
+                baseLabel.setText(String.valueOf(modelBundle.getBaseScholarship().getValue()));
 
                 tabPane.setDisable(false);
             });
@@ -312,6 +315,27 @@ public class AdminMenuController {
 
         if (answer.isPresent()) {
             updateModel(answer.get());
+        }
+    }
+
+    @FXML
+    private void changeBaseScholarship() {
+        var dialog = new TextInputDialog();
+        dialog.setHeaderText("Введите новую базовую стипендию");
+
+        var answer = dialog.showAndWait();
+
+        if (answer.isPresent()) {
+            try {
+                float newBase = Float.valueOf(answer.get());
+
+                modelBundle.getBaseScholarship().setValue(newBase);
+                updateModel(modelBundle.getBaseScholarship());
+            } catch (Exception e) {
+                var alert = new Alert(AlertType.ERROR);
+                alert.setHeaderText("Стипендия должна быть числом");
+                alert.show();
+            }
         }
     }
 
