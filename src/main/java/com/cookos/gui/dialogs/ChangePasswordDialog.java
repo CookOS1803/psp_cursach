@@ -9,7 +9,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.layout.VBox;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,10 +28,7 @@ public class ChangePasswordDialog extends ChangeDialog<User> {
         newPasswordField.setPromptText("Новый пароль");
         repeatPasswordField.setPromptText("Повторите новый пароль");
 
-        var vbox = new VBox();
-        vbox.getChildren().addAll(oldPasswordField, newPasswordField, repeatPasswordField);
-
-        getDialogPane().setContent(vbox);
+        contentVbox.getChildren().addAll(oldPasswordField, newPasswordField, repeatPasswordField);
 
         setResultConverter(button -> {
             if (button.getButtonData() == ButtonData.CANCEL_CLOSE) {

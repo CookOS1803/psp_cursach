@@ -42,9 +42,9 @@ public class AdminServerTask implements Runnable {
                     case Update -> {
                         switch (message.getValue().getModelType()) {
                             case Performance -> update(message, Performance.class);
-                            case Student -> unimplementedOperation();
-                            case Speciality -> unimplementedOperation();
-                            case Subject -> unimplementedOperation();
+                            case Student -> update(message, Student.class);
+                            case Speciality -> update(message, Speciality.class);
+                            case Subject -> update(message, Subject.class);
                             case SpecialScholarship -> update(message, SpecialScholarship.class);
                             case User -> unimplementedOperation();
                             case Speciality_Subject -> unimplementedOperation();

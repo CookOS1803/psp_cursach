@@ -3,13 +3,14 @@ package com.cookos.server;
 import java.io.*;
 
 import com.cookos.dao.GenericDao;
+import com.cookos.model.BaseScholarship;
+import com.cookos.model.EducationForm;
 import com.cookos.model.Student;
 import com.cookos.model.User;
 import com.cookos.net.*;
 
 public class StudentServerTask implements Runnable {
 
-    private static final float BASE_SCHOLARSHIP = 200f;
     private ObjectOutputStream ostream;
     private ObjectInputStream istream;
     private int userId;
@@ -48,13 +49,24 @@ public class StudentServerTask implements Runnable {
     }
 
     private void calculateScholarship(StudentMessage message) throws IOException {
-        try (var studentDao = new GenericDao<>(Student.class)) {
+        try (
+            var studentDao = new GenericDao<>(Student.class);
+            var baseScholarshipDao = new GenericDao<>(BaseScholarship.class)
+        ) {
             var student = studentDao.findByUniqueColumn("id", studentId);
+            float baseScholarship = baseScholarshipDao.selectAll().get(0).getValue();
             
             float scholarship = student.getSpecialScholarship().getSocial()
                               + student.getSpecialScholarship().getPersonal()
                               + student.getSpecialScholarship().getNamed();
             
+            if (student.getEducationForm() == EducationForm.Paid) {
+                ostream.writeFloat(scholarship);
+                ostream.flush();
+
+                return;
+            }
+
             float sum = 0;
             int zeroes = 0;
 
@@ -66,19 +78,21 @@ public class StudentServerTask implements Runnable {
                 }
             }
 
+
+
             if (student.getPerformance().size() != zeroes) {
                 float average = sum / (student.getPerformance().size() - zeroes);
 
                 if (average >= 9) {
-                    scholarship += BASE_SCHOLARSHIP * student.getSpeciality().getMult9();
+                    scholarship += baseScholarship * student.getSpeciality().getMult9();
                 } else if (average >= 8) {
-                    scholarship += BASE_SCHOLARSHIP * student.getSpeciality().getMult8();
+                    scholarship += baseScholarship * student.getSpeciality().getMult8();
                 } else if (average >= 7) {
-                    scholarship += BASE_SCHOLARSHIP * student.getSpeciality().getMult7();
+                    scholarship += baseScholarship * student.getSpeciality().getMult7();
                 } else if (average >= 6) {
-                    scholarship += BASE_SCHOLARSHIP * student.getSpeciality().getMult6();
+                    scholarship += baseScholarship * student.getSpeciality().getMult6();
                 } else if (average >= 5) {
-                    scholarship += BASE_SCHOLARSHIP * student.getSpeciality().getMult5();
+                    scholarship += baseScholarship * student.getSpeciality().getMult5();
                 }
             }
 

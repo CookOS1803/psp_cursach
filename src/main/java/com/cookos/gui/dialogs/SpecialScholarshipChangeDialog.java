@@ -6,7 +6,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.layout.VBox;
 
 public class SpecialScholarshipChangeDialog extends ChangeDialog<SpecialScholarship> {
     
@@ -21,10 +20,7 @@ public class SpecialScholarshipChangeDialog extends ChangeDialog<SpecialScholars
         personalField.setPromptText("Personal");
         namedField.setPromptText("Named");
         
-        var vbox = new VBox();
-        vbox.getChildren().addAll(socialField, personalField, namedField);
-
-        getDialogPane().setContent(vbox);
+        contentVbox.getChildren().addAll(socialField, personalField, namedField);
 
         setResultConverter(button -> {
             if (button.getButtonData() == ButtonData.CANCEL_CLOSE) {

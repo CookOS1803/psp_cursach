@@ -7,7 +7,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.layout.VBox;
 
 public class ChangeInfoDialog extends ChangeDialog<Student> {
     @FXML private TextField phoneField = new TextField();
@@ -19,10 +18,7 @@ public class ChangeInfoDialog extends ChangeDialog<Student> {
         phoneField.setPromptText("Номер телефона");
         emailField.setPromptText("Email");
 
-        var vbox = new VBox();
-        vbox.getChildren().addAll(phoneField, emailField);
-
-        getDialogPane().setContent(vbox);
+        contentVbox.getChildren().addAll(phoneField, emailField);
 
         setResultConverter(button -> {
             if (button.getButtonData() == ButtonData.CANCEL_CLOSE) {
@@ -41,8 +37,8 @@ public class ChangeInfoDialog extends ChangeDialog<Student> {
                 return null;
             }
 
-            student.setPhone(phoneField.getText());
-            student.setEmail(emailField.getText());
+            student.setPhone(phoneField.getText().strip());
+            student.setEmail(emailField.getText().strip());
 
             return student;
         });

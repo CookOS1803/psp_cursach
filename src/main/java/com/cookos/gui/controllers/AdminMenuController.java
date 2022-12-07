@@ -61,6 +61,7 @@ public class AdminMenuController {
     private MenuItem addSubjectItem;
     private ChoiceDialog<SubjectForSpeciality> addSubjectDialog;
 
+    private StudentChangeDialog studentChangeDialog = new StudentChangeDialog();
     private PerformanceChangeDialog performanceChangeDialog = new PerformanceChangeDialog();
     private SpecialScholarshipChangeDialog scholarshipChangeDialog = new SpecialScholarshipChangeDialog();
 
@@ -132,6 +133,30 @@ public class AdminMenuController {
     @FXML
     private void onStudentsTableClick(MouseEvent event) {
         onTableClick(event, studentsTable, CastHelpers.toIdentifiables(modelBundle.getStudents()));
+        
+        int selectedIndex = studentsTable.getSelectionModel().getSelectedIndex();
+        
+        if (selectedIndex >= 0) {            
+            changeItem.setOnAction(e -> changeStudent(selectedIndex));
+        }
+    }
+
+    private void changeStudent(int selectedIndex) {
+        int id = (Integer)studentsTable.getItems().get(selectedIndex).get(0);
+
+        var student = modelBundle.getStudents()
+                                 .stream()
+                                 .filter(p -> p.getId() == id)
+                                 .toList()
+                                 .get(0);
+        
+        studentChangeDialog.setChangeableValue(student);
+
+        var answer = studentChangeDialog.showAndWait();
+
+        if (answer.isPresent()) {
+            updateModel(answer.get());
+        }
     }
 
     @FXML
@@ -142,32 +167,34 @@ public class AdminMenuController {
         if (selectedIndex >= 0) {
             addSubjectItem.setVisible(true);            
 
-            addSubjectItem.setOnAction(e -> {
-                if (modelBundle.getSubjects().isEmpty()) {
-                    var alert = new Alert(AlertType.ERROR);
-                    alert.setHeaderText("There are no subjects in system");
-                    alert.show();
-                    
-                    return;
-                }
+            addSubjectItem.setOnAction(e -> addSubjectToSpeciality(selectedIndex));
+        }
+    }
 
-                var subjects = CastHelpers.toSubjectForSpeciality(modelBundle.getSubjects());
-                addSubjectDialog.getItems().clear();
-                addSubjectDialog.getItems().addAll(subjects);
-                addSubjectDialog.setSelectedItem(subjects.get(0));
-    
-                var answer = addSubjectDialog.showAndWait();
+    private void addSubjectToSpeciality(int selectedIndex) {
+        if (modelBundle.getSubjects().isEmpty()) {
+            var alert = new Alert(AlertType.ERROR);
+            alert.setHeaderText("There are no subjects in system");
+            alert.show();
+            
+            return;
+        }
 
-                if (answer.isPresent()) {
-                    int specialityId = (Integer)specialitiesTable.getItems().get(selectedIndex).get(0);
-        
-                    addModel(Speciality_Subject.builder()
-                                               .specialityId(specialityId)
-                                               .subjectId(answer.get().getSubject().getId())
-                                               .build()
-                    );
-                }
-            });
+        var subjects = CastHelpers.toSubjectForSpeciality(modelBundle.getSubjects());
+        addSubjectDialog.getItems().clear();
+        addSubjectDialog.getItems().addAll(subjects);
+        addSubjectDialog.setSelectedItem(subjects.get(0));
+
+        var answer = addSubjectDialog.showAndWait();
+
+        if (answer.isPresent()) {
+            int specialityId = (Integer)specialitiesTable.getItems().get(selectedIndex).get(0);
+
+            addModel(Speciality_Subject.builder()
+                                       .specialityId(specialityId)
+                                       .subjectId(answer.get().getSubject().getId())
+                                       .build()
+            );
         }
     }
 
@@ -180,23 +207,25 @@ public class AdminMenuController {
         int selectedIndex = performanceTable.getSelectionModel().getSelectedIndex();
         
         if (selectedIndex >= 0) {            
-            changeItem.setOnAction(e -> {
-                int id = (Integer)performanceTable.getItems().get(selectedIndex).get(0);
+            changeItem.setOnAction(e -> changePerformance(selectedIndex));
+        }
+    }
 
-                var performance = modelBundle.getPerformances()
-                                             .stream()
-                                             .filter(p -> p.getId() == id)
-                                             .toList()
-                                             .get(0);
-                
-                performanceChangeDialog.setChangeableValue(performance);
+    private void changePerformance(int selectedIndex) {
+        int id = (Integer)performanceTable.getItems().get(selectedIndex).get(0);
 
-                var answer = performanceChangeDialog.showAndWait();
+        var performance = modelBundle.getPerformances()
+                                     .stream()
+                                     .filter(p -> p.getId() == id)
+                                     .toList()
+                                     .get(0);
+        
+        performanceChangeDialog.setChangeableValue(performance);
 
-                if (answer.isPresent()) {
-                    updateModel(answer.get());
-                }
-            });
+        var answer = performanceChangeDialog.showAndWait();
+
+        if (answer.isPresent()) {
+            updateModel(answer.get());
         }
     }
 
