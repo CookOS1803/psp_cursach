@@ -15,10 +15,10 @@ public class ChangeDialog<R> extends Dialog<R> {
     public ChangeDialog() {
         super();
 
-        getDialogPane().getButtonTypes().add(new ButtonType("Ok", ButtonData.OK_DONE));
-        getDialogPane().getButtonTypes().add(new ButtonType("Cancel", ButtonData.CANCEL_CLOSE));
+        getDialogPane().getButtonTypes().add(new ButtonType("Ок", ButtonData.OK_DONE));
+        getDialogPane().getButtonTypes().add(new ButtonType("Отмена", ButtonData.CANCEL_CLOSE));
         getDialogPane().setContent(contentVbox);
 
-        setHeaderText("Write new data");
+        setHeaderText("Заполните поля");
     }
 }

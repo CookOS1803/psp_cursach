@@ -27,12 +27,12 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <Label text="Login" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                  <Label text="Логин" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
                   </Label>
-                  <Label layoutX="10.0" layoutY="7.0" text="Password" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                  <Label layoutX="10.0" layoutY="7.0" text="Пароль" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
@@ -41,7 +41,7 @@
                   <TextField fx:id="passwordField" layoutX="10.0" layoutY="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
-            <Button fx:id="addButton" mnemonicParsing="false" onAction="#addAdmin" prefHeight="40.0" prefWidth="100.0" text="Add" />
+            <Button fx:id="addButton" mnemonicParsing="false" onAction="#addAdmin" prefHeight="40.0" prefWidth="100.0" text="Добавить" />
          </children>
       </VBox>
    </right>

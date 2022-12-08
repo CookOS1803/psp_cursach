@@ -22,7 +22,7 @@ public class AddSubjectController extends AdminSubController {
             nameField.getText().isBlank() ||
             hoursField.getText().isBlank()
         ) {
-            alert.setHeaderText("All fields must be filled");
+            alert.setHeaderText("Заполните все поля");
             alert.show();
             return;
         }
@@ -32,7 +32,7 @@ public class AddSubjectController extends AdminSubController {
         try {
             id = Integer.valueOf(idField.getText().strip());
         } catch (Exception e) {
-            alert.setHeaderText("Id must be numeric value");
+            alert.setHeaderText("ID должно быть числом");
             alert.show();
             return;
         }
@@ -43,12 +43,12 @@ public class AddSubjectController extends AdminSubController {
             hours = Integer.valueOf(hoursField.getText().strip());
 
             if (hours < 0) {
-                alert.setHeaderText("Total hours must be positive number");
+                alert.setHeaderText("Часы должны быть положительным числом");
                 alert.show();
                 return;
             }
         } catch (Exception e) {
-            alert.setHeaderText("Total hours must be numeric value");
+            alert.setHeaderText("Часы должны быть числом");
             alert.show();
             return;
         }

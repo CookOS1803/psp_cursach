@@ -52,7 +52,7 @@ public class AdminMenuController {
     @FXML private Label namedLabel;
     @FXML private Label baseLabel;
     private ModelBundle modelBundle;
-    private List<Identifiable> subjectsOfSpeciality = new ArrayList<>();
+    private List<Speciality_Subject> subjectsOfSpeciality = new ArrayList<>();
     private SpecialScholarship currentSpecialScholarship = null;
 
     private ContextMenu contextMenu;
@@ -64,6 +64,8 @@ public class AdminMenuController {
     private StudentChangeDialog studentChangeDialog = new StudentChangeDialog();
     private PerformanceChangeDialog performanceChangeDialog = new PerformanceChangeDialog();
     private SpecialScholarshipChangeDialog scholarshipChangeDialog = new SpecialScholarshipChangeDialog();
+    private SpecialityChangeDialog specialityChangeDialog = new SpecialityChangeDialog();
+    private SubjectChangeDialog subjectChangeDialog = new SubjectChangeDialog();
 
     private Runnable updateTablesTask;
     
@@ -88,9 +90,9 @@ public class AdminMenuController {
         TableIntitializers.addCellFactories(subjectsOfSpecialitiesTable);
         
         contextMenu = new ContextMenu();
-        removeItem = new MenuItem("Remove");
-        changeItem = new MenuItem("Change");
-        addSubjectItem = new MenuItem("Add subject");
+        removeItem = new MenuItem("Удалить");
+        changeItem = new MenuItem("Изменить");
+        addSubjectItem = new MenuItem("Добавить предмет");
         addSubjectItem.setVisible(false);
         contextMenu.getItems().addAll(removeItem, changeItem, addSubjectItem);
 
@@ -132,42 +134,25 @@ public class AdminMenuController {
 
     @FXML
     private void onStudentsTableClick(MouseEvent event) {
-        onTableClick(event, studentsTable, CastHelpers.toIdentifiables(modelBundle.getStudents()));
+        onTableClick(event, studentsTable, modelBundle.getStudents());
         
         int selectedIndex = studentsTable.getSelectionModel().getSelectedIndex();
         
         if (selectedIndex >= 0) {            
-            changeItem.setOnAction(e -> changeStudent(selectedIndex));
-        }
-    }
-
-    private void changeStudent(int selectedIndex) {
-        int id = (Integer)studentsTable.getItems().get(selectedIndex).get(0);
-
-        var student = modelBundle.getStudents()
-                                 .stream()
-                                 .filter(p -> p.getId() == id)
-                                 .toList()
-                                 .get(0);
-        
-        studentChangeDialog.setChangeableValue(student);
-
-        var answer = studentChangeDialog.showAndWait();
-
-        if (answer.isPresent()) {
-            updateModel(answer.get());
+            changeItem.setOnAction(e -> changeModel(selectedIndex, studentsTable, modelBundle.getStudents(), studentChangeDialog));
         }
     }
 
     @FXML
     private void onSpecialitiesTableClick(MouseEvent event) {
-        onTableClick(event, specialitiesTable, CastHelpers.toIdentifiables(modelBundle.getSpecialities()));
+        onTableClick(event, specialitiesTable, modelBundle.getSpecialities());
 
         int selectedIndex = specialitiesTable.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
             addSubjectItem.setVisible(true);            
 
             addSubjectItem.setOnAction(e -> addSubjectToSpeciality(selectedIndex));
+            changeItem.setOnAction(e -> changeModel(selectedIndex, specialitiesTable, modelBundle.getSpecialities(), specialityChangeDialog));
         }
     }
 
@@ -207,25 +192,7 @@ public class AdminMenuController {
         int selectedIndex = performanceTable.getSelectionModel().getSelectedIndex();
         
         if (selectedIndex >= 0) {            
-            changeItem.setOnAction(e -> changePerformance(selectedIndex));
-        }
-    }
-
-    private void changePerformance(int selectedIndex) {
-        int id = (Integer)performanceTable.getItems().get(selectedIndex).get(0);
-
-        var performance = modelBundle.getPerformances()
-                                     .stream()
-                                     .filter(p -> p.getId() == id)
-                                     .toList()
-                                     .get(0);
-        
-        performanceChangeDialog.setChangeableValue(performance);
-
-        var answer = performanceChangeDialog.showAndWait();
-
-        if (answer.isPresent()) {
-            updateModel(answer.get());
+            changeItem.setOnAction(e -> changeModel(selectedIndex, performanceTable, modelBundle.getPerformances(), performanceChangeDialog));
         }
     }
 
@@ -234,17 +201,24 @@ public class AdminMenuController {
                 
         if (!subjectsOfSpeciality.isEmpty()) {
             onTableClick(event, subjectsOfSpecialitiesTable, subjectsOfSpeciality);
+            changeItem.setVisible(false);
         }
     }
 
     @FXML
     private void onSubjectsTableClick(MouseEvent event) {
-        onTableClick(event, subjectsTable, CastHelpers.toIdentifiables(modelBundle.getSubjects()));
+        onTableClick(event, subjectsTable, modelBundle.getSubjects());
+
+        int selectedIndex = subjectsTable.getSelectionModel().getSelectedIndex();
+
+        if (selectedIndex >= 0) {
+            changeItem.setOnAction(e -> changeModel(selectedIndex, subjectsTable, modelBundle.getSubjects(), subjectChangeDialog));
+        }
     }
 
     @FXML
     private void onAdminsTableClick(MouseEvent event) {
-        onTableClick(event, userAdminTable, CastHelpers.toIdentifiables(modelBundle.getUsers()));
+        onTableClick(event, userAdminTable, modelBundle.getUsers());
     }
 
     @FXML
@@ -303,7 +277,7 @@ public class AdminMenuController {
         }
     }
 
-    private void onTableClick(MouseEvent event, TableView<List<Object>> table, List<Identifiable> identifiables) {
+    private <T extends Identifiable & Model> void onTableClick(MouseEvent event, TableView<List<Object>> table, List<T> identifiables) {
         changeItem.setVisible(true);
         addSubjectItem.setVisible(false);
 
@@ -323,13 +297,30 @@ public class AdminMenuController {
                 int id = (Integer)table.getItems().get(selectedIndex).get(0);
 
                 removeItem.setOnAction(e -> removeModel(
-                    (Model)identifiables.stream()
+                    identifiables.stream()
                                         .filter(s -> s.getId() == id)
                                         .collect(Collectors.toList())
                                         .get(0)
                 ));
             }
             contextMenu.show(table, event.getScreenX(), event.getScreenY());
+        }
+    }
+
+    private <T extends Identifiable & Model> void changeModel(int selectedIndex, TableView<List<Object>> table, List<T> models, ChangeDialog<T> dialog) {
+        int id = (Integer)table.getItems().get(selectedIndex).get(0);
+
+        var model = models.stream()
+                          .filter(p -> p.getId() == id)
+                          .toList()
+                          .get(0);
+        
+        dialog.setChangeableValue(model);
+
+        var answer = dialog.showAndWait();
+
+        if (answer.isPresent()) {
+            updateModel(answer.get());
         }
     }
 
@@ -357,6 +348,12 @@ public class AdminMenuController {
         if (answer.isPresent()) {
             try {
                 float newBase = Float.valueOf(answer.get());
+
+                if (newBase < 0) {
+                    var alert = new Alert(AlertType.ERROR);
+                    alert.setHeaderText("Стипендия должна быть положительным числом");
+                    alert.show();
+                }
 
                 modelBundle.getBaseScholarship().setValue(newBase);
                 updateModel(modelBundle.getBaseScholarship());

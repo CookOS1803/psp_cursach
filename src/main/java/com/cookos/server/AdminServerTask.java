@@ -55,7 +55,7 @@ public class AdminServerTask implements Runnable {
                         switch (message.getValue().getModelType()) {
                             case Performance -> unimplementedOperation();
                             case Student -> removeStudent(message);
-                            case Speciality -> remove(message, Speciality.class, "Can't remove speciality when it has students");
+                            case Speciality -> remove(message, Speciality.class, "Нельзя удалить специальность пока на ней студенты");
                             case Subject -> remove(message, Subject.class);
                             case SpecialScholarship -> unimplementedOperation();
                             case User -> remove(message, Subject.class);
@@ -73,7 +73,7 @@ public class AdminServerTask implements Runnable {
                 try {
                     ostream.writeObject(ServerMessage.builder()
                                                      .answerType(AnswerType.Failure)
-                                                     .message("Unhandled exception")
+                                                     .message("Необработанное исключение")
                                                      .build());
                     ostream.flush();
                 } catch (IOException e1) {
@@ -187,7 +187,7 @@ public class AdminServerTask implements Runnable {
             if (speciality.getSubjects().contains(subject)) {
                 ostream.writeObject(ServerMessage.builder()
                                              .answerType(AnswerType.Failure)
-                                             .message("Speciality already has this subject")
+                                             .message("Этот предмет уже приписан к специальности")
                                              .build()
                 );
                 ostream.flush();

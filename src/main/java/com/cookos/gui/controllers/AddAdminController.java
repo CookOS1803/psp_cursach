@@ -24,7 +24,7 @@ public class AddAdminController extends AdminSubController {
             loginField.getText().isBlank() ||
             passwordField.getText().isEmpty()
         ) {
-            alert.setHeaderText("All fields must be filled");
+            alert.setHeaderText("Заполните все поля");
             alert.show();
             return;
         }

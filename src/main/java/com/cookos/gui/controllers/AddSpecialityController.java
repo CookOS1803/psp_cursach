@@ -29,7 +29,7 @@ public class AddSpecialityController extends AdminSubController {
             mult8Field.getText().isBlank() ||
             mult9Field.getText().isBlank()
         ) {
-            alert.setHeaderText("All fields must be filled");
+            alert.setHeaderText("Заполните все поля");
             alert.show();
             return;
         }
@@ -39,7 +39,7 @@ public class AddSpecialityController extends AdminSubController {
         try {
             id = Integer.valueOf(idField.getText().strip());
         } catch (Exception e) {
-            alert.setHeaderText("Id must be numeric value");
+            alert.setHeaderText("ID должно быть числом");
             alert.show();
             return;
         }
@@ -54,12 +54,12 @@ public class AddSpecialityController extends AdminSubController {
             mult9 = Float.parseFloat(mult9Field.getText().strip());
 
             if (mult5 < 0 || mult6 < 0 || mult7 < 0 || mult8 < 0 || mult9 < 0) {
-                alert.setHeaderText("Multipliers must be positive numbers");
+                alert.setHeaderText("Множители должны быть положительными");
                 alert.show();
                 return;
             }
         } catch (Exception e) {
-            alert.setHeaderText("Multipliers must be real numbers");
+            alert.setHeaderText("Множитедт должны быть числами");
             alert.show();
             return;
         }

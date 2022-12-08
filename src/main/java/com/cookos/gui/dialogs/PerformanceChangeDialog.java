@@ -31,7 +31,7 @@ public class PerformanceChangeDialog extends ChangeDialog<Performance> {
                 totalScoreField.getText().isBlank() ||
                 missedHoursField.getText().isBlank()
             ) {
-                alert.setHeaderText("All fields must be filled");
+                alert.setHeaderText("Заполните все поля");
                 alert.show();
 
                 return null;
@@ -42,8 +42,15 @@ public class PerformanceChangeDialog extends ChangeDialog<Performance> {
             
             try {
                 hours = Integer.valueOf(missedHoursField.getText());
+
+                if (hours < 0) {
+                    alert.setHeaderText("Пропущенные часы должны быть положительным числом");
+                    alert.show();
+
+                    return null;
+                }
             } catch (Exception e) {
-                alert.setHeaderText("Missed hours must be numeric value");
+                alert.setHeaderText("Пропущенные часы должны быть числом");
                 alert.show();
 
                 return null;
@@ -51,8 +58,15 @@ public class PerformanceChangeDialog extends ChangeDialog<Performance> {
 
             try {
                 score = Float.valueOf(totalScoreField.getText());
+
+                if (score < 0) {
+                    alert.setHeaderText("Общий балл должен быть положительным");
+                    alert.show();
+
+                    return null;
+                }
             } catch (Exception e) {
-                alert.setHeaderText("Total score must be numeric value");
+                alert.setHeaderText("Общий балл должен быть числом");
                 alert.show();
 
                 return null;

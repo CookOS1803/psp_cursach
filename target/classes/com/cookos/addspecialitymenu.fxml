@@ -11,7 +11,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cookos.gui.controllers.AddSpecialityController">
    <right>
-      <Button fx:id="addButton" mnemonicParsing="false" onAction="#addSpeciality" prefHeight="40.0" prefWidth="100.0" text="Add" BorderPane.alignment="BOTTOM_RIGHT">
+      <Button fx:id="addButton" mnemonicParsing="false" onAction="#addSpeciality" prefHeight="40.0" prefWidth="100.0" text="Добавить" BorderPane.alignment="BOTTOM_RIGHT">
          <BorderPane.margin>
             <Insets left="10.0" />
          </BorderPane.margin>
@@ -33,37 +33,37 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <Label text="Id" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+            <Label text="ID" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </Label>
-            <Label text="Name" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <Label text="Название" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </Label>
-            <Label layoutX="10.0" layoutY="7.0" text="Mult 5-5.9" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <Label layoutX="10.0" layoutY="7.0" text="Множитель 5-5.9" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </Label>
-            <Label layoutX="10.0" layoutY="7.0" text="Mult 6-6.9" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+            <Label layoutX="10.0" layoutY="7.0" text="Множитель 6-6.9" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </Label>
-            <Label layoutX="10.0" layoutY="7.0" text="Mult 7-7.9" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+            <Label layoutX="10.0" layoutY="7.0" text="Множитель 7-7.9" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </Label>
-            <Label layoutX="10.0" layoutY="7.0" text="Mult 8-8.9" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+            <Label layoutX="10.0" layoutY="7.0" text="Множитель 8-8.9" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </Label>
-            <Label layoutX="10.0" layoutY="7.0" text="Mult 9-10" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+            <Label layoutX="10.0" layoutY="7.0" text="Множитель 9-10" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>

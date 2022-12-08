@@ -35,7 +35,7 @@ public class AddStudentController extends AdminSubController {
             emailField.getText().isBlank() ||
             specialityField.getText().isBlank()
         ) {
-            alert.setHeaderText("All fields must be filled");
+            alert.setHeaderText("Заполните все поля");
             alert.show();
             return;
         }
@@ -45,7 +45,7 @@ public class AddStudentController extends AdminSubController {
         try {
             id = Integer.valueOf(idField.getText().strip());
         } catch (Exception e) {
-            alert.setHeaderText("Id must be numeric value");
+            alert.setHeaderText("ID должно быть числом");
             alert.show();
             return;
         }
@@ -53,7 +53,7 @@ public class AddStudentController extends AdminSubController {
         try {
             specialityId = Integer.valueOf(specialityField.getText().strip());
         } catch (Exception e) {
-            alert.setHeaderText("Speciality id must be numeric value");
+            alert.setHeaderText("ID специальности должно быть числом");
             alert.show();
             return;
         }

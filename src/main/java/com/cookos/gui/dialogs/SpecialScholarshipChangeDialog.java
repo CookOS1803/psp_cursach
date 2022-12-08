@@ -34,7 +34,7 @@ public class SpecialScholarshipChangeDialog extends ChangeDialog<SpecialScholars
                 personalField.getText().isBlank() ||
                 namedField.getText().isBlank() 
             ) {
-                alert.setHeaderText("All fields must be filled");
+                alert.setHeaderText("Заполните все поля");
                 alert.show();
 
                 return null;
@@ -46,8 +46,15 @@ public class SpecialScholarshipChangeDialog extends ChangeDialog<SpecialScholars
                 social = Float.valueOf(socialField.getText());
                 personal = Float.valueOf(personalField.getText());
                 named = Float.valueOf(namedField.getText());
+
+                if (social < 0 || personal < 0 || named < 0) {                    
+                    alert.setHeaderText("Стипендия должна быть положительной");
+                    alert.show();
+
+                    return null;
+                }
             } catch (Exception e) {
-                alert.setHeaderText("Scholaship must be numeric value");
+                alert.setHeaderText("Стипендия должна быть числом");
                 alert.show();
 
                 return null;
