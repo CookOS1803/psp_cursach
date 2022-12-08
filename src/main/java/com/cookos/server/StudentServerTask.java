@@ -1,6 +1,9 @@
 package com.cookos.server;
 
 import java.io.*;
+import java.net.Socket;
+
+import org.apache.logging.log4j.*;
 
 import com.cookos.dao.GenericDao;
 import com.cookos.model.BaseScholarship;
@@ -11,13 +14,17 @@ import com.cookos.net.*;
 
 public class StudentServerTask implements Runnable {
 
+    private static final Logger logger = LogManager.getLogger(StudentServerTask.class);
+    
+    private Socket socket;
     private ObjectOutputStream ostream;
     private ObjectInputStream istream;
     private int userId;
     private int studentId;
 
-    public StudentServerTask(ObjectOutputStream ostream, ObjectInputStream istream, int userId, int studentId) throws IOException
+    public StudentServerTask(Socket socket, ObjectOutputStream ostream, ObjectInputStream istream, int userId, int studentId) throws IOException
     {
+        this.socket = socket;
         this.ostream = ostream;
         this.istream = istream;
         this.userId = userId;
@@ -41,7 +48,7 @@ public class StudentServerTask implements Runnable {
                 sendModels();
 
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.info("%s:%d disconnected".formatted(socket.getInetAddress(), socket.getPort()));
 
                 return;
             }

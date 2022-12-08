@@ -1,19 +1,26 @@
 package com.cookos.server;
 
 import java.io.*;
+import java.net.Socket;
 
 import com.cookos.dao.GenericDao;
 import com.cookos.model.*;
 import com.cookos.net.*;
 import com.cookos.util.HashPassword;
 
+import org.apache.logging.log4j.*;
+
 public class AdminServerTask implements Runnable {
 
+    private static final Logger logger = LogManager.getLogger(AdminServerTask.class);
+
+    private Socket socket;
     private ObjectOutputStream ostream;
     private ObjectInputStream istream;
 
-    public AdminServerTask(ObjectOutputStream ostream, ObjectInputStream istream) throws IOException
+    public AdminServerTask(Socket socket, ObjectOutputStream ostream, ObjectInputStream istream) throws IOException
     {
+        this.socket = socket;
         this.ostream = ostream;
         this.istream = istream;
     }
@@ -68,17 +75,7 @@ public class AdminServerTask implements Runnable {
                 sendModels();
 
             } catch (Exception e) {
-                e.printStackTrace();
-
-                try {
-                    ostream.writeObject(ServerMessage.builder()
-                                                     .answerType(AnswerType.Failure)
-                                                     .message("Необработанное исключение")
-                                                     .build());
-                    ostream.flush();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                logger.info("%s:%d disconnected".formatted(socket.getInetAddress(), socket.getPort()));
 
                 return;
             }

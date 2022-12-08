@@ -79,7 +79,7 @@
                   <Insets />
                </GridPane.margin>
             </Label>
-            <Label layoutX="10.0" layoutY="7.0" text="Специальность" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+            <Label layoutX="10.0" layoutY="7.0" text="ID специальности" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>

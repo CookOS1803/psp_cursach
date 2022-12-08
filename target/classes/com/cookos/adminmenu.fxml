@@ -10,8 +10,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -240,9 +240,9 @@
                 </Tab>
                 <Tab text="Администраторы">
                      <content>
-                        <SplitPane dividerPositions="0.6366666666666667" prefHeight="160.0" prefWidth="200.0">
-                          <items>
-                              <TableView fx:id="userAdminTable" onMouseReleased="#onAdminsTableClick">
+                        <HBox>
+                           <children>
+                              <TableView fx:id="userAdminTable" onMouseReleased="#onAdminsTableClick" prefHeight="342.0" prefWidth="675.0" HBox.hgrow="ALWAYS">
                                  <columns>
                                     <TableColumn minWidth="50.0" prefWidth="75.0" text="ID" />
                                     <TableColumn minWidth="50.0" prefWidth="75.0" text="Логин" />
@@ -251,9 +251,9 @@
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                  </columnResizePolicy>
                               </TableView>
-                              <FlowPane fx:id="addAdminPane" alignment="CENTER_RIGHT" />
-                          </items>
-                        </SplitPane>
+                              <AnchorPane fx:id="addAdminPane" />
+                           </children>
+                        </HBox>
                      </content>
                 </Tab>
               </tabs>

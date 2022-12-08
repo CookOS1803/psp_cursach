@@ -4,17 +4,22 @@ import java.io.*;
 import java.net.*;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.*;
+
 import com.cookos.dao.GenericDao;
 import com.cookos.model.*;
 import com.cookos.net.*;
 
 public class LoginServerTask implements Runnable {
-    
+    private static final Logger logger = LogManager.getLogger(LoginServerTask.class);
+
+    private Socket socket;
     private ObjectOutputStream ostream;
     private ObjectInputStream istream;
 
     public LoginServerTask(Socket socket) throws IOException
     {
+        this.socket = socket;
         ostream = new ObjectOutputStream(socket.getOutputStream());
         ostream.flush();
         istream = new ObjectInputStream(socket.getInputStream());
@@ -26,7 +31,7 @@ public class LoginServerTask implements Runnable {
         try {
             handleLogin().run();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info("%s:%d disconnected".formatted(socket.getInetAddress(), socket.getPort()));
         }
         
     }
@@ -63,9 +68,9 @@ public class LoginServerTask implements Runnable {
                 ostream.flush();
 
                 if (user.getRole() == UserRole.Admin) {
-                    return new AdminServerTask(ostream, istream);
+                    return new AdminServerTask(socket, ostream, istream);
                 } else {
-                    return new StudentServerTask(ostream, istream, user.getId(), Integer.valueOf(user.getLogin()));
+                    return new StudentServerTask(socket, ostream, istream, user.getId(), Integer.valueOf(user.getLogin()));
                 }
             }
         }

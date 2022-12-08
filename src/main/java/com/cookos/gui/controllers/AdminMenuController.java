@@ -29,7 +29,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
 public class AdminMenuController {
@@ -38,7 +38,7 @@ public class AdminMenuController {
     @FXML private TitledPane addStudentPane;
     @FXML private TitledPane addSpecialityPane;
     @FXML private TitledPane addSubjectPane;
-    @FXML private FlowPane addAdminPane;
+    @FXML private AnchorPane addAdminPane;
 
     @FXML private TableView<List<Object>> studentsTable;
     @FXML private TableView<List<Object>> performanceTable;
