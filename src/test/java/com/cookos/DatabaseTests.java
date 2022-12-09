@@ -194,6 +194,13 @@ public class DatabaseTests {
     }
 
     @Test
+    public void addScholarship() throws Exception {
+        try (var baseScholarshipDao = new GenericDao<>(BaseScholarship.class)) {
+            baseScholarshipDao.add(new BaseScholarship(0, 200));
+        }
+    }
+
+    @Test
     public void checkBaseScholarship() throws Exception {
         try (var baseScholarshipDao = new GenericDao<>(BaseScholarship.class)) {
             var l = baseScholarshipDao.selectAll();
