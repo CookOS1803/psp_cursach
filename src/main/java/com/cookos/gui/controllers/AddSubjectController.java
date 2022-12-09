@@ -31,6 +31,12 @@ public class AddSubjectController extends AdminSubController {
 
         try {
             id = Integer.valueOf(idField.getText().strip());
+            
+            if (id < 0) {
+                alert.setHeaderText("ID должно быть положительным");
+                alert.show();
+                return;
+            }
         } catch (Exception e) {
             alert.setHeaderText("ID должно быть числом");
             alert.show();

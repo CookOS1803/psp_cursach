@@ -38,7 +38,7 @@ public class TableIntitializers {
                     add(s.getPhone());
                     add(s.getAddress());
                     add(s.getEmail());
-                    add(s.getEducationForm());
+                    add(s.getEducationForm().toRussianString());
                     add(s.getSpeciality().getName());
                 }
             };

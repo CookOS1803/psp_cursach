@@ -44,6 +44,12 @@ public class AddStudentController extends AdminSubController {
 
         try {
             id = Integer.valueOf(idField.getText().strip());
+
+            if (id < 0) {
+                alert.setHeaderText("ID должно быть положительным");
+                alert.show();
+                return;
+            }
         } catch (Exception e) {
             alert.setHeaderText("ID должно быть числом");
             alert.show();
@@ -52,6 +58,12 @@ public class AddStudentController extends AdminSubController {
 
         try {
             specialityId = Integer.valueOf(specialityField.getText().strip());
+
+            if (specialityId < 0) {
+                alert.setHeaderText("ID специальности должно быть положительным");
+                alert.show();
+                return;
+            }
         } catch (Exception e) {
             alert.setHeaderText("ID специальности должно быть числом");
             alert.show();
