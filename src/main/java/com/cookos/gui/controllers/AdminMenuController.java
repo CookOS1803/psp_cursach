@@ -96,7 +96,8 @@ public class AdminMenuController {
         addSubjectItem.setVisible(false);
         contextMenu.getItems().addAll(removeItem, changeItem, addSubjectItem);
 
-        addSubjectDialog = new ChoiceDialog<>();        
+        addSubjectDialog = new ChoiceDialog<>();
+        addSubjectDialog.setHeaderText("Выберите предмет");
 
         updateTablesTask = () -> {            
             Platform.runLater(() -> tabPane.setDisable(true));
@@ -105,6 +106,7 @@ public class AdminMenuController {
                 modelBundle = (ModelBundle)Client.istream.readObject();
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
+                Platform.runLater(() -> FXMLHelpers.onConnectionLost());
                 return;
             }
 
@@ -219,6 +221,7 @@ public class AdminMenuController {
     @FXML
     private void onAdminsTableClick(MouseEvent event) {
         onTableClick(event, userAdminTable, modelBundle.getUsers());
+        changeItem.setVisible(false);
     }
 
     @FXML
@@ -298,9 +301,9 @@ public class AdminMenuController {
 
                 removeItem.setOnAction(e -> removeModel(
                     identifiables.stream()
-                                        .filter(s -> s.getId() == id)
-                                        .collect(Collectors.toList())
-                                        .get(0)
+                                 .filter(s -> s.getId() == id)
+                                 .collect(Collectors.toList())
+                                 .get(0)
                 ));
             }
             contextMenu.show(table, event.getScreenX(), event.getScreenY());
@@ -366,6 +369,8 @@ public class AdminMenuController {
     }
 
     private void actionWithModel(Model model, OperationType operationType) {
+        var alert = new Alert(AlertType.ERROR);
+
         try {
             Client.ostream.writeObject(ClientMessage.builder()
                                                     .operationType(operationType)
@@ -376,8 +381,7 @@ public class AdminMenuController {
 
             var message = (ServerMessage)Client.istream.readObject();
 
-            if (message.getAnswerType() == AnswerType.Failure) {
-                var alert = new Alert(AlertType.ERROR);
+            if (message.getAnswerType() == AnswerType.Failure) {                
                 alert.setHeaderText(message.getMessage());
                 alert.show();
             }
@@ -385,6 +389,7 @@ public class AdminMenuController {
             new Thread(updateTablesTask).start();
         } catch (Exception e) {
             e.printStackTrace();
+            FXMLHelpers.onConnectionLost();
         }
     }
 

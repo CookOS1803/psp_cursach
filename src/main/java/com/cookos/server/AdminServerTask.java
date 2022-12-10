@@ -65,7 +65,7 @@ public class AdminServerTask implements Runnable {
                             case Speciality -> remove(message, Speciality.class, "Нельзя удалить специальность пока на ней студенты");
                             case Subject -> remove(message, Subject.class);
                             case SpecialScholarship -> unimplementedOperation();
-                            case User -> remove(message, Subject.class);
+                            case User -> remove(message, User.class);
                             case Speciality_Subject -> unlinkSpecialityAndSubject(message);
                             case BaseScholarship -> unimplementedOperation();
                         }
@@ -316,7 +316,7 @@ public class AdminServerTask implements Runnable {
             if (speciality == null) {
                 ostream.writeObject(ServerMessage.builder()
                                                  .answerType(AnswerType.Failure)
-                                                 .message("Wrong speciality id")
+                                                 .message("Неправильный ID специальности")
                                                  .build()
                 );
                 ostream.flush();
@@ -334,7 +334,7 @@ public class AdminServerTask implements Runnable {
         } catch (Exception e) {
             ostream.writeObject(ServerMessage.builder()
                                              .answerType(AnswerType.Failure)
-                                             .message("Invalid student id")
+                                             .message("ID студента занят")
                                              .build()
             );
             ostream.flush();
@@ -354,7 +354,7 @@ public class AdminServerTask implements Runnable {
             e.printStackTrace();
             ostream.writeObject(ServerMessage.builder()
                                              .answerType(AnswerType.Failure)
-                                             .message("Duplicate user login")
+                                             .message("Такой логин уже есть")
                                              .build()
             );
             ostream.flush();

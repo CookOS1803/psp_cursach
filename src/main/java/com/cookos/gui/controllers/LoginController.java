@@ -45,6 +45,7 @@ public class LoginController {
                 answer = (LoginMessage)Client.istream.readObject();
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
+                Platform.runLater(() -> FXMLHelpers.onConnectionLost());
                 return;
             }
 
@@ -54,6 +55,7 @@ public class LoginController {
                     role = (UserRole)Client.istream.readObject();
                 } catch (ClassNotFoundException | IOException e1) {
                     e1.printStackTrace();
+                    Platform.runLater(() -> FXMLHelpers.onConnectionLost());
                     return;
                 }
 

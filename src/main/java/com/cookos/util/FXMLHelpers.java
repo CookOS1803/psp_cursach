@@ -6,6 +6,8 @@ import com.cookos.Client;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 public class FXMLHelpers {
     
@@ -21,5 +23,14 @@ public class FXMLHelpers {
 
     public static FXMLLoader makeLoader(String fxml) {
         return new FXMLLoader(Client.class.getResource(fxml + ".fxml"));
+    }
+
+    public static void onConnectionLost() {
+        var alert = new Alert(AlertType.ERROR);
+
+        alert.setHeaderText("Потеряно соединение с сервером");
+        alert.showAndWait();
+
+        Client.stage.close();
     }
 }

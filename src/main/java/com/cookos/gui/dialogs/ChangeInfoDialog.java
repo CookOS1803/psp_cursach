@@ -17,6 +17,8 @@ public class ChangeInfoDialog extends ChangeDialog<Student> {
 
         phoneField.setPromptText("Номер телефона");
         emailField.setPromptText("Email");
+        phoneField.setText(student.getPhone());
+        emailField.setText(student.getEmail());
 
         contentVbox.getChildren().addAll(phoneField, emailField);
 

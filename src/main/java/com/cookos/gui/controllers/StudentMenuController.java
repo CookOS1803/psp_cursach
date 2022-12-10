@@ -7,6 +7,7 @@ import com.cookos.Client;
 import com.cookos.gui.dialogs.ChangeInfoDialog;
 import com.cookos.gui.dialogs.ChangePasswordDialog;
 import com.cookos.net.*;
+import com.cookos.util.FXMLHelpers;
 import com.cookos.util.TableIntitializers;
 
 import javafx.application.Platform;
@@ -41,6 +42,7 @@ public class StudentMenuController {
                 modelBundle = (StudentModelBundle)Client.istream.readObject();
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
+                Platform.runLater(() -> FXMLHelpers.onConnectionLost());
                 return;
             }
 
@@ -85,36 +87,59 @@ public class StudentMenuController {
     }
 
     @FXML
-    private void calculateScholarship() throws IOException {
-        Client.ostream.writeObject(StudentMessage.builder()
-                                                 .operationType(StudentOperationType.CalculateScholarship)
-                                                 .build()
-        );
-        Client.ostream.flush();
+    private void calculateScholarship() {
+        float scholarship;
 
-        float scholarship = Client.istream.readFloat();
+        try {
+            Client.ostream.writeObject(StudentMessage.builder()
+                                                     .operationType(StudentOperationType.CalculateScholarship)
+                                                     .build()
+            );
 
-        var alert = new Alert(AlertType.INFORMATION);
+            Client.ostream.flush();
+
+            scholarship = Client.istream.readFloat();
+        } catch (IOException e) {
+            e.printStackTrace();
+            FXMLHelpers.onConnectionLost();
+            return;
+        }
+
+        if (scholarship < 0) {
+            FXMLHelpers.onConnectionLost();
+            return;
+        }
+
+        var alert = new Alert(AlertType.INFORMATION);        
+
         alert.setHeaderText("Итоговая стипендия: " + scholarship);
         alert.show();
 
         new Thread(updateInfoTask).start();
-    }
+    }    
 
-    private void sendMessage(Object value, StudentOperationType operationType) throws IOException, ClassNotFoundException {
-        Client.ostream.writeObject(StudentMessage.builder()
-                                                 .operationType(operationType)
-                                                 .value(value)
-                                                 .build());
-        Client.ostream.flush();
+    private void sendMessage(Object value, StudentOperationType operationType){
+        try {
+            Client.ostream.writeObject(StudentMessage.builder()
+                                                     .operationType(operationType)
+                                                     .value(value)
+                                                     .build());
+            Client.ostream.flush();
+            
+            var message = (ServerMessage)Client.istream.readObject();
 
-        var message = (ServerMessage)Client.istream.readObject();
-
-        if (message.getAnswerType() == AnswerType.Failure) {
-            var alert = new Alert(AlertType.ERROR);
-            alert.setHeaderText(message.getMessage());
-            alert.show();
+            if (message.getAnswerType() == AnswerType.Failure) {
+                var alert = new Alert(AlertType.ERROR);
+                alert.setHeaderText(message.getMessage());
+                alert.show();
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            FXMLHelpers.onConnectionLost();
+            return;
         }
+
+        
 
         new Thread(updateInfoTask).start();
     }

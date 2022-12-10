@@ -85,8 +85,6 @@ public class StudentServerTask implements Runnable {
                 }
             }
 
-
-
             if (student.getPerformance().size() != zeroes) {
                 float average = sum / (student.getPerformance().size() - zeroes);
 
