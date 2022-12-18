@@ -59,8 +59,8 @@ public class PerformanceChangeDialog extends ChangeDialog<Performance> {
             try {
                 score = Float.valueOf(totalScoreField.getText());
 
-                if (score < 0) {
-                    alert.setHeaderText("Общий балл должен быть положительным");
+                if (score < 0 || score > 10) {
+                    alert.setHeaderText("Общий балл должен быть числом от 0 до 10");
                     alert.show();
 
                     return null;
